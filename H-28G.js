@@ -39,8 +39,8 @@ function Game() {
 			|| window.msRequestAnimationFrame
 			|| window.oRequestAnimationFrame
 			|| function(callback) {
-				window.setTimeout(callback, 1000 / 60);
-			};
+			window.setTimeout(callback, 1000 / 60);
+		};
 	})();
 
 	function spawnRing() {
@@ -77,11 +77,11 @@ function Game() {
 	function Ring() {
 		this.radius = 10;
 
-		this.draw = function () {
+		this.draw = function() {
 			emptyRing(this.radius);
 		};
 
-		this.act = function () {
+		this.act = function() {
 			if (this.radius > MAX_SIDE) {
 				rings.pop();
 			}
@@ -90,6 +90,7 @@ function Game() {
 	}
 
 	var lastSpawn = 0;
+
 	function render() {
 		var now = +Date.now();
 
