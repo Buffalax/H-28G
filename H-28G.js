@@ -10,7 +10,7 @@ var MAX_LINE_WIDTH = 20;
 var RING_SPAWN_RATE = 1000;
 var FPS = 60;
 
-var INITIAL_SPEED = 1;
+var INITIAL_SPEED = 4;
 var SPEED = INITIAL_SPEED;
 var SPEED_INCREMENT = 0;
 
@@ -31,7 +31,7 @@ drawBgr = function () {
 };
 
 draw = function () {
-    requestAnimationFrame(function(){
+    requestAnimationFrame(function () {
         drawBgr();
         for (var i = 0, len = rings.length; i < len; i++) {
             rings[i].draw();
@@ -46,7 +46,7 @@ loop = function () {
 };
 
 function Ring() {
-    this.radius = 0;
+    this.radius = 10;
     this.draw = function () {
         emptyRing(this.radius);
     };
@@ -54,7 +54,7 @@ function Ring() {
         if (this.radius > MAX_SIDE) {
             rings.pop();
         }
-        this.radius += SPEED;
+        this.radius += SPEED * (this.radius / MAX_SIDE);
     };
 }
 
