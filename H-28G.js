@@ -20,13 +20,16 @@ function Game() {
 	var rings = [];
 	var canvas = document.getElementById("canvas");
 	var context = canvas.getContext('2d');
+
 	var WIDTH = canvas.width;
 	var HEIGHT = canvas.height;
 	var CENTER_X = WIDTH / 2;
 	var CENTER_Y = HEIGHT / 2;
 	var MAX_SIDE = Math.max(WIDTH, HEIGHT);
-	var MAX_LINE_WIDTH = 20;
+
+	var RING_MAX_LINE_WIDTH = 20;
 	var RING_SPAWN_RATE = 1000;
+	var RING_INITIAL_RADIUS = 10;
 
 	var INITIAL_SPEED = 4;
 	var SPEED = INITIAL_SPEED;
@@ -69,13 +72,15 @@ function Game() {
 	function emptyRing(radius) {
 		context.beginPath();
 		context.arc(CENTER_X, CENTER_Y, radius, 0, 2 * Math.PI, false);
-		context.lineWidth = MAX_LINE_WIDTH * (radius / MAX_SIDE);
+		context.lineWidth = RING_MAX_LINE_WIDTH * (radius / MAX_SIDE);
 		context.strokeStyle = '#000000';
 		context.stroke();
 	}
 
 	function Ring() {
-		this.radius = 10;
+		this.radius = RING_INITIAL_RADIUS;
+		this.centerX = CENTER_X;
+		this.centerY = CENTER_Y;
 
 		this.draw = function() {
 			emptyRing(this.radius);
