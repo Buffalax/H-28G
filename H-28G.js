@@ -31,10 +31,12 @@ drawBgr = function () {
 };
 
 draw = function () {
-    drawBgr();
-    for (var i = 0, len = rings.length; i < len; i++) {
-        rings[i].draw();
-    }
+    requestAnimationFrame(function(){
+        drawBgr();
+        for (var i = 0, len = rings.length; i < len; i++) {
+            rings[i].draw();
+        }
+    });
 };
 
 loop = function () {
