@@ -16,6 +16,11 @@ var Util = (function() {
 	};
 })();
 
+function Point(aX, aY) {
+	this.x = aX;
+	this.y = aY;
+}
+
 function Game() {
 	var rings = [];
 	var canvas = document.getElementById("canvas");
@@ -23,9 +28,8 @@ function Game() {
 
 	var WIDTH = canvas.width;
 	var HEIGHT = canvas.height;
-	var CENTER_X = WIDTH / 2;
-	var CENTER_Y = HEIGHT / 2;
-	var MAX_SIDE = Math.max(WIDTH, HEIGHT);
+	var center = new Point(WIDTH / 2, HEIGHT / 2);
+	var MAX_SIDE = Math.max(center.x, center.y);
 
 	var RING_MAX_LINE_WIDTH = 20;
 	var RING_SPAWN_RATE = 1000;
@@ -69,21 +73,20 @@ function Game() {
 		}
 	}
 
-	function emptyRing(radius) {
+	function emptyRing(aRadius, aCenter) {
 		context.beginPath();
-		context.arc(CENTER_X, CENTER_Y, radius, 0, 2 * Math.PI, false);
-		context.lineWidth = RING_MAX_LINE_WIDTH * (radius / MAX_SIDE);
+		context.arc(aCenter.x, aCenter.y, aRadius, 0, 2 * Math.PI, false);
+		context.lineWidth = RING_MAX_LINE_WIDTH * (aRadius / MAX_SIDE);
 		context.strokeStyle = '#000000';
 		context.stroke();
 	}
 
 	function Ring() {
 		this.radius = RING_INITIAL_RADIUS;
-		this.centerX = CENTER_X;
-		this.centerY = CENTER_Y;
+		this.center = center;
 
 		this.draw = function() {
-			emptyRing(this.radius);
+			emptyRing(this.radius, this.center);
 		};
 
 		this.act = function() {
