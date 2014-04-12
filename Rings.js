@@ -2,39 +2,6 @@ var RING_MAX_LINE_WIDTH = 20;
 var canvas = document.getElementById("canvas");
 var MAX_SIDE = Math.max(canvas.width, canvas.height);
 
-
-function reverseRectangle(aBeginning, aWidth, aHeight, aAngle) {
-
-	this.points = [new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0)];
-	this.rescale = function(aBeginning, aWidth, aHeight) {
-		this.points[0].x = aBeginning.x;
-		this.points[0].y = aBeginning.y;
-
-		this.points[1].x = aBeginning.x;
-		this.points[1].y = aBeginning.y + aHeight;
-
-		this.points[2].x = aBeginning.x + aWidth;
-		this.points[2].y = this.points[1].y;
-
-		this.points[3].x = this.points[2].x;
-		this.points[3].y = this.points[0].y;
-	};
-	this.rotate = function(aAngle, aPoint) {
-		for (var i = 0, len = this.points.length; i < len; i++) {
-			this.points[i].rotate(aAngle, aPoint);
-		}
-	};
-	this.draw = function(aContext) {
-		aContext.moveTo(this.points[0].x, this.points[0].y);
-		aContext.lineTo(this.points[1].x, this.points[1].y);
-		aContext.lineTo(this.points[2].x, this.points[2].y);
-		aContext.lineTo(this.points[3].x, this.points[3].y);
-	}
-
-	this.rescale(aBeginning, aWidth, aHeight);
-	this.rotate(aAngle, this.points[0]);
-}
-
 function EmptyRing(aRadius, aCenter, aAngle) {
 	this.radius = aRadius;
 	this.center = aCenter;
@@ -112,7 +79,7 @@ function RectangleRingSingle(aRadius, aCenter, aAngle) {
 
 	//this.concaveRectangle = [new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0)];
 
-	this.rectangle = new reverseRectangle(new Point(0, 0), 0, 0, 0);
+	this.rectangle = new ReverseRectangle(new Point(0, 0), 0, 0, 0);
 
 	this.rescale = function() {
 
@@ -144,6 +111,7 @@ function RectangleRingSingle(aRadius, aCenter, aAngle) {
 		aContext.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
 		this.rectangle.draw(aContext);
 		aContext.closePath();
+
 		aContext.fill();
 		aContext.stroke();
 	};

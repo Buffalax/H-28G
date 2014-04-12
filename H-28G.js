@@ -16,42 +16,6 @@ var Util = (function() {
 	};
 })();
 
-function Point(aX, aY) {
-	this.x = aX;
-	this.y = aY;
-	this.rotate = function(aAngle, aPoint) {
-		if (aPoint.x !== this.x || aPoint.y !== this.y) {
-			this.x -= aPoint.x;
-			this.y -= aPoint.y;
-
-			var s = Math.sin(aAngle);
-			var c = Math.cos(aAngle);
-
-			var newX = this.x * c - this.y * s;
-			var newY = this.x * s + this.y * c;
-
-			this.x = newX + aPoint.x;
-			this.y = newY + aPoint.y;
-		}
-	};
-}
-
-function Line(aP1, aP2) {
-	this.p1 = aP1;
-	this.p2 = aP2;
-	this.rotate = function(aAngle, aPoint) {
-		this.p1.rotate(aAngle, aPoint);
-		this.p2.rotate(aAngle, aPoint);
-	};
-	this.draw = function(aContext) {
-		aContext.beginPath();
-		aContext.moveTo(this.p1.x, this.p1.y);
-		aContext.lineTo(this.p2.x, this.p2.y);
-		aContext.closePath();
-		aContext.stroke();
-	};
-}
-
 function Game() {
 	var rings = [];
 	var canvas = document.getElementById("canvas");
