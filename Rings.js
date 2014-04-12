@@ -82,14 +82,14 @@ function RectangleRingSingle(aRadius, aCenter, aAngle) {
 
 	this.rescale = function() {
 
-		this.concaveRectangle[0].x = this.center.x - this.radius * 	this.RECTANGLE_WIDTH/2;
-		this.concaveRectangle[0].y = this.center.y + this.radius * this.RECTANGLE_HEIGHT/2;
+		this.concaveRectangle[0].x = this.center.x - this.radius * this.RECTANGLE_WIDTH / 2;
+		this.concaveRectangle[0].y = this.center.y + this.radius * this.RECTANGLE_HEIGHT / 2;
 
-		this.concaveRectangle[1].x = this.center.x + this.radius * this.RECTANGLE_WIDTH/2;
+		this.concaveRectangle[1].x = this.center.x + this.radius * this.RECTANGLE_WIDTH / 2;
 		this.concaveRectangle[1].y = this.concaveRectangle[0].y;
 
 		this.concaveRectangle[2].x = this.concaveRectangle[1].x;
-		this.concaveRectangle[2].y = this.center.y - this.radius * this.RECTANGLE_HEIGHT/2;
+		this.concaveRectangle[2].y = this.center.y - this.radius * this.RECTANGLE_HEIGHT / 2;
 
 		this.concaveRectangle[3].x = this.concaveRectangle[0].x;
 		this.concaveRectangle[3].y = this.concaveRectangle[2].y;

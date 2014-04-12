@@ -118,7 +118,7 @@ function Game() {
 		};
 
 		this.act = function() {
-			if (this.radius > MAX_SIDE) {
+			if (this.radius > MAX_SIDE * 3) {
 				rings.pop();
 			}
 			this.radius += SPEED * (this.radius / MAX_SIDE);
