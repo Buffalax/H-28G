@@ -43,10 +43,10 @@ function Line(aP1, aP2) {
 		this.p1.rotate(aAngle, aPoint);
 		this.p2.rotate(aAngle, aPoint);
 	};
-	this.draw = function(aContext){
+	this.draw = function(aContext) {
 		aContext.beginPath();
-		aContext.moveTo(this.p1.x,this.p1.y);
-		aContext.lineTo(this.p2.x,this.p2.y);
+		aContext.moveTo(this.p1.x, this.p1.y);
+		aContext.lineTo(this.p2.x, this.p2.y);
 		aContext.closePath();
 		aContext.stroke();
 	};
@@ -66,7 +66,7 @@ function Game() {
 	var RING_SPAWN_RATE = 1000;
 	var RING_INITIAL_RADIUS = 10;
 
-	var RING_MAX_ROTATION = 0.1;
+	var RING_MAX_ROTATION = 0.05;
 
 	var INITIAL_SPEED = 4;
 	var SPEED = INITIAL_SPEED;
@@ -175,7 +175,7 @@ function Game() {
 		this.radius = RING_INITIAL_RADIUS;
 		this.center = center;
 		this.angle = Math.random() * 360;
-		this.angleIncrement = Math.random() * RING_MAX_ROTATION;
+		this.angleIncrement = Math.random() * RING_MAX_ROTATION * (-1 + Math.round(Math.random()) * 2);
 
 		this.type = new EmptyRing(this.radius, this.center);
 
@@ -189,10 +189,10 @@ function Game() {
 			}
 			this.radius += SPEED * (this.radius / MAX_SIDE);
 			this.angle += this.angleIncrement;
-			if(this.angle>=360){
+			if (this.angle >= 360) {
 				this.angle -= 360;
-			}else if(this.angle<0){
-				this.angle +=360
+			} else if (this.angle < 0) {
+				this.angle += 360
 			}
 			this.type.radius = this.radius;
 			this.type.angle = this.angle;
