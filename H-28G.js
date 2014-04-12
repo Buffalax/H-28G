@@ -166,8 +166,6 @@ function Game() {
 			this.lineBottom.draw(context);
 			this.lineLeft.draw(context);
 			this.lineRight.draw(context);
-
-
 		};
 
 		this.rescale();
@@ -191,6 +189,11 @@ function Game() {
 			}
 			this.radius += SPEED * (this.radius / MAX_SIDE);
 			this.angle += this.angleIncrement;
+			if(this.angle>=360){
+				this.angle -= 360;
+			}else if(this.angle<0){
+				this.angle +=360
+			}
 			this.type.radius = this.radius;
 			this.type.angle = this.angle;
 			this.type.rescale();
