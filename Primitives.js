@@ -26,11 +26,8 @@ function Line(aP1, aP2) {
 		this.p2.rotate(aAngle, aPoint);
 	};
 	this.draw = function(aContext) {
-		aContext.beginPath();
 		aContext.moveTo(this.p1.x, this.p1.y);
 		aContext.lineTo(this.p2.x, this.p2.y);
-		aContext.closePath();
-		aContext.stroke();
 	};
 }
 

@@ -57,13 +57,14 @@ function EmptyRing(aRadius, aCenter, aAngle) {
 
 		aContext.beginPath();
 		aContext.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
-		aContext.closePath();
-		aContext.stroke();
 
 		this.lineTop.draw(aContext);
 		this.lineBottom.draw(aContext);
 		this.lineLeft.draw(aContext);
 		this.lineRight.draw(aContext);
+
+		aContext.closePath();
+		aContext.stroke();
 	};
 
 	this.rescale();
@@ -118,3 +119,5 @@ function RectangleRingSingle(aRadius, aCenter, aAngle) {
 
 	this.rescale();
 }
+
+
