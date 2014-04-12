@@ -21,6 +21,11 @@ function Point(aX, aY) {
 	this.y = aY;
 }
 
+function Line(aP1, aP2){
+	this.p1 = aP1;
+	this.p2 = aP2;
+};
+
 function Game() {
 	var rings = [];
 	var canvas = document.getElementById("canvas");
@@ -73,20 +78,37 @@ function Game() {
 		}
 	}
 
-	function emptyRing(aRadius, aCenter) {
-		context.beginPath();
-		context.arc(aCenter.x, aCenter.y, aRadius, 0, 2 * Math.PI, false);
-		context.lineWidth = RING_MAX_LINE_WIDTH * (aRadius / MAX_SIDE);
-		context.strokeStyle = '#000000';
-		context.stroke();
+	function EmptyRing(aRadius, aCenter) {
+		this.radius = aRadius;
+		this.center = aCenter;
+		this.angle = Math.random() * 360;
+		this.angleIncrement = Math.random() * 2;
+
+		this.rotate = function() {
+
+		};
+		this.translate = function() {
+
+		};
+		this.collisionCheck = function() {
+
+		};
+		this.draw = function() {
+			context.beginPath();
+			context.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
+			context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
+			context.strokeStyle = '#000000';
+			context.stroke();
+		};
 	}
 
 	function Ring() {
 		this.radius = RING_INITIAL_RADIUS;
 		this.center = center;
+		this.type = new EmptyRing(this.radius, this.center);
 
 		this.draw = function() {
-			emptyRing(this.radius, this.center);
+			this.type.draw();
 		};
 
 		this.act = function() {
@@ -94,6 +116,7 @@ function Game() {
 				rings.pop();
 			}
 			this.radius += SPEED * (this.radius / MAX_SIDE);
+			this.type.radius = this.radius;
 		};
 	}
 
