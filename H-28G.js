@@ -62,7 +62,6 @@ function Game() {
 	var center = new Point(WIDTH / 2, HEIGHT / 2);
 	var MAX_SIDE = Math.max(center.x, center.y);
 
-	var RING_MAX_LINE_WIDTH = 20;
 	var RING_SPAWN_RATE = 1000;
 	var RING_INITIAL_RADIUS = 10;
 
@@ -106,81 +105,16 @@ function Game() {
 		}
 	}
 
-	function EmptyRing(aRadius, aCenter, aAngle) {
-		this.radius = aRadius;
-		this.center = aCenter;
-		this.angle = aAngle;
-
-		this.lineTop = new Line(new Point(0, 0), new Point(0, 0));
-		this.lineBottom = new Line(new Point(0, 0), new Point(0, 0));
-		this.lineLeft = new Line(new Point(0, 0), new Point(0, 0));
-		this.lineRight = new Line(new Point(0, 0), new Point(0, 0));
-
-		this.rescale = function() {
-			this.lineTop.p1.x = this.center.x;
-			this.lineTop.p1.y = this.center.y - this.radius;
-			this.lineTop.p2.x = this.lineTop.p1.x;
-			this.lineTop.p2.y = this.lineTop.p1.y + this.radius * 0.2;
-
-			this.lineBottom.p1.x = this.center.x;
-			this.lineBottom.p1.y = this.center.y + this.radius;
-			this.lineBottom.p2.x = this.lineBottom.p1.x;
-			this.lineBottom.p2.y = this.lineBottom.p1.y - this.radius * 0.2;
-
-			this.lineLeft.p1.x = this.center.x - this.radius;
-			this.lineLeft.p1.y = this.center.y;
-			this.lineLeft.p2.x = this.lineLeft.p1.x + this.radius * 0.2;
-			this.lineLeft.p2.y = this.lineLeft.p1.y;
-
-			this.lineRight.p1.x = this.center.x + this.radius;
-			this.lineRight.p1.y = this.center.y;
-			this.lineRight.p2.x = this.lineRight.p1.x - this.radius * 0.2;
-			this.lineRight.p2.y = this.lineRight.p1.y;
-			this.rotate();
-		};
-
-		this.rotate = function() {
-			this.lineTop.rotate(this.angle, this.center);
-			this.lineBottom.rotate(this.angle, this.center);
-			this.lineLeft.rotate(this.angle, this.center);
-			this.lineRight.rotate(this.angle, this.center);
-
-		};
-		this.translate = function() {
-
-		};
-
-		this.collisionCheck = function() {
-
-		};
-		this.draw = function() {
-			context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-			context.strokeStyle = '#000000';
-
-			context.beginPath();
-			context.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
-			context.closePath();
-			context.stroke();
-
-			this.lineTop.draw(context);
-			this.lineBottom.draw(context);
-			this.lineLeft.draw(context);
-			this.lineRight.draw(context);
-		};
-
-		this.rescale();
-	}
-
 	function Ring() {
 		this.radius = RING_INITIAL_RADIUS;
 		this.center = center;
 		this.angle = Math.random() * 360;
 		this.angleIncrement = Math.random() * RING_MAX_ROTATION * (-1 + Math.round(Math.random()) * 2);
 
-		this.type = new EmptyRing(this.radius, this.center);
+		this.type = new EmptyRing(this.radius, this.center, this.angle);
 
 		this.draw = function() {
-			this.type.draw();
+			this.type.draw(context);
 		};
 
 		this.act = function() {
