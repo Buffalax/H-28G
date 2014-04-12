@@ -111,7 +111,7 @@ function Game() {
 		this.angle = Math.random() * 360;
 		this.angleIncrement = Math.random() * RING_MAX_ROTATION * (-1 + Math.round(Math.random()) * 2);
 
-		this.type = new EmptyRing(this.radius, this.center, this.angle);
+		this.type = Math.random() > 0.5 ? new EmptyRing(this.radius, this.center, this.angle) : new RectangleRingSingle(this.radius, this.center, this.angle);
 
 		this.draw = function() {
 			this.type.draw(context);

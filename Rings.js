@@ -68,4 +68,57 @@ function EmptyRing(aRadius, aCenter, aAngle) {
 	this.rescale();
 }
 
+function RectangleRingSingle(aRadius, aCenter, aAngle) {
+	this.radius = aRadius;
+	this.center = aCenter;
+	this.angle = aAngle;
 
+	this.concaveRectangle = [new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0)];
+
+	this.rescale = function() {
+
+		this.concaveRectangle[0].x = this.center.x - this.radius * 0.5;
+		this.concaveRectangle[0].y = this.center.y + this.radius * 0.7;
+
+		this.concaveRectangle[1].x = this.center.x + this.radius * 0.5;
+		this.concaveRectangle[1].y = this.concaveRectangle[0].y;
+
+		this.concaveRectangle[2].x = this.concaveRectangle[1].x;
+		this.concaveRectangle[2].y = this.center.y - this.radius * 0.7;
+
+		this.concaveRectangle[3].x = this.concaveRectangle[0].x;
+		this.concaveRectangle[3].y = this.concaveRectangle[2].y;
+		this.rotate();
+	};
+
+	this.rotate = function() {
+		this.concaveRectangle[0].rotate(this.angle, this.center);
+		this.concaveRectangle[1].rotate(this.angle, this.center);
+		this.concaveRectangle[2].rotate(this.angle, this.center);
+		this.concaveRectangle[3].rotate(this.angle, this.center);
+	};
+	this.translate = function() {
+
+	};
+
+	this.collisionCheck = function() {
+
+	};
+	this.draw = function(aContext) {
+		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
+		aContext.strokeStyle = '#000000';
+		aContext.fillStyle = '#CCCCCC';
+
+		aContext.beginPath();
+		aContext.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
+		aContext.moveTo(this.concaveRectangle[0].x, this.concaveRectangle[0].y);
+		aContext.lineTo(this.concaveRectangle[1].x, this.concaveRectangle[1].y);
+		aContext.lineTo(this.concaveRectangle[2].x, this.concaveRectangle[2].y);
+		aContext.lineTo(this.concaveRectangle[3].x, this.concaveRectangle[3].y);
+		aContext.closePath();
+		aContext.fill();
+		aContext.stroke();
+	};
+
+	this.rescale();
+}
