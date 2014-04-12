@@ -8,6 +8,8 @@ function EmptyRing(aRadius, aCenter, aAngle) {
 	this.center = aCenter;
 	this.angle = aAngle;
 
+	this.DECORATION_HEIGHT = 0.2;
+
 	this.lineTop = new Line(new Point(0, 0), new Point(0, 0));
 	this.lineBottom = new Line(new Point(0, 0), new Point(0, 0));
 	this.lineLeft = new Line(new Point(0, 0), new Point(0, 0));
@@ -17,21 +19,21 @@ function EmptyRing(aRadius, aCenter, aAngle) {
 		this.lineTop.p1.x = this.center.x;
 		this.lineTop.p1.y = this.center.y - this.radius;
 		this.lineTop.p2.x = this.lineTop.p1.x;
-		this.lineTop.p2.y = this.lineTop.p1.y + this.radius * 0.2;
+		this.lineTop.p2.y = this.lineTop.p1.y + this.radius * this.DECORATION_HEIGHT;
 
 		this.lineBottom.p1.x = this.center.x;
 		this.lineBottom.p1.y = this.center.y + this.radius;
 		this.lineBottom.p2.x = this.lineBottom.p1.x;
-		this.lineBottom.p2.y = this.lineBottom.p1.y - this.radius * 0.2;
+		this.lineBottom.p2.y = this.lineBottom.p1.y - this.radius * this.DECORATION_HEIGHT;
 
 		this.lineLeft.p1.x = this.center.x - this.radius;
 		this.lineLeft.p1.y = this.center.y;
-		this.lineLeft.p2.x = this.lineLeft.p1.x + this.radius * 0.2;
+		this.lineLeft.p2.x = this.lineLeft.p1.x + this.radius * this.DECORATION_HEIGHT;
 		this.lineLeft.p2.y = this.lineLeft.p1.y;
 
 		this.lineRight.p1.x = this.center.x + this.radius;
 		this.lineRight.p1.y = this.center.y;
-		this.lineRight.p2.x = this.lineRight.p1.x - this.radius * 0.2;
+		this.lineRight.p2.x = this.lineRight.p1.x - this.radius * this.DECORATION_HEIGHT;
 		this.lineRight.p2.y = this.lineRight.p1.y;
 		this.rotate();
 	};
@@ -73,18 +75,21 @@ function RectangleRingSingle(aRadius, aCenter, aAngle) {
 	this.center = aCenter;
 	this.angle = aAngle;
 
+	this.RECTANGLE_WIDTH = 0.8;
+	this.RECTANGLE_HEIGHT = 1.6;
+
 	this.concaveRectangle = [new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0)];
 
 	this.rescale = function() {
 
-		this.concaveRectangle[0].x = this.center.x - this.radius * 0.5;
-		this.concaveRectangle[0].y = this.center.y + this.radius * 0.7;
+		this.concaveRectangle[0].x = this.center.x - this.radius * 	this.RECTANGLE_WIDTH/2;
+		this.concaveRectangle[0].y = this.center.y + this.radius * this.RECTANGLE_HEIGHT/2;
 
-		this.concaveRectangle[1].x = this.center.x + this.radius * 0.5;
+		this.concaveRectangle[1].x = this.center.x + this.radius * this.RECTANGLE_WIDTH/2;
 		this.concaveRectangle[1].y = this.concaveRectangle[0].y;
 
 		this.concaveRectangle[2].x = this.concaveRectangle[1].x;
-		this.concaveRectangle[2].y = this.center.y - this.radius * 0.7;
+		this.concaveRectangle[2].y = this.center.y - this.radius * this.RECTANGLE_HEIGHT/2;
 
 		this.concaveRectangle[3].x = this.concaveRectangle[0].x;
 		this.concaveRectangle[3].y = this.concaveRectangle[2].y;
