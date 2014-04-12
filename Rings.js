@@ -3,6 +3,38 @@ var canvas = document.getElementById("canvas");
 var MAX_SIDE = Math.max(canvas.width, canvas.height);
 
 
+function reverseRectangle(aBeginning, aWidth, aHeight, aAngle) {
+
+	this.points = [new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0)];
+	this.rescale = function(aBeginning, aWidth, aHeight) {
+		this.points[0].x = aBeginning.x;
+		this.points[0].y = aBeginning.y;
+
+		this.points[1].x = aBeginning.x;
+		this.points[1].y = aBeginning.y + aHeight;
+
+		this.points[2].x = aBeginning.x + aWidth;
+		this.points[2].y = this.points[1].y;
+
+		this.points[3].x = this.points[2].x;
+		this.points[3].y = this.points[0].y;
+	};
+	this.rotate = function(aAngle, aPoint) {
+		for (var i = 0, len = this.points.length; i < len; i++) {
+			this.points[i].rotate(aAngle, aPoint);
+		}
+	};
+	this.draw = function(aContext) {
+		aContext.moveTo(this.points[0].x, this.points[0].y);
+		aContext.lineTo(this.points[1].x, this.points[1].y);
+		aContext.lineTo(this.points[2].x, this.points[2].y);
+		aContext.lineTo(this.points[3].x, this.points[3].y);
+	}
+
+	this.rescale(aBeginning, aWidth, aHeight);
+	this.rotate(aAngle, this.points[0]);
+}
+
 function EmptyRing(aRadius, aCenter, aAngle) {
 	this.radius = aRadius;
 	this.center = aCenter;
@@ -78,29 +110,23 @@ function RectangleRingSingle(aRadius, aCenter, aAngle) {
 	this.RECTANGLE_WIDTH = 0.8;
 	this.RECTANGLE_HEIGHT = 1.6;
 
-	this.concaveRectangle = [new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0)];
+	//this.concaveRectangle = [new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0)];
+
+	this.rectangle = new reverseRectangle(new Point(0, 0), 0, 0, 0);
 
 	this.rescale = function() {
 
-		this.concaveRectangle[0].x = this.center.x - this.radius * this.RECTANGLE_WIDTH / 2;
-		this.concaveRectangle[0].y = this.center.y + this.radius * this.RECTANGLE_HEIGHT / 2;
-
-		this.concaveRectangle[1].x = this.center.x + this.radius * this.RECTANGLE_WIDTH / 2;
-		this.concaveRectangle[1].y = this.concaveRectangle[0].y;
-
-		this.concaveRectangle[2].x = this.concaveRectangle[1].x;
-		this.concaveRectangle[2].y = this.center.y - this.radius * this.RECTANGLE_HEIGHT / 2;
-
-		this.concaveRectangle[3].x = this.concaveRectangle[0].x;
-		this.concaveRectangle[3].y = this.concaveRectangle[2].y;
+		this.rectangle.rescale(
+			//new Point(this.center.x, this.center.y),
+			new Point(this.center.x - this.radius * (this.RECTANGLE_WIDTH / 2), this.center.y - this.radius * (this.RECTANGLE_HEIGHT / 2)),
+			this.RECTANGLE_WIDTH * this.radius,
+			this.RECTANGLE_HEIGHT * this.radius
+		);
 		this.rotate();
 	};
 
 	this.rotate = function() {
-		this.concaveRectangle[0].rotate(this.angle, this.center);
-		this.concaveRectangle[1].rotate(this.angle, this.center);
-		this.concaveRectangle[2].rotate(this.angle, this.center);
-		this.concaveRectangle[3].rotate(this.angle, this.center);
+		this.rectangle.rotate(this.angle, this.center);
 	};
 	this.translate = function() {
 
@@ -116,10 +142,7 @@ function RectangleRingSingle(aRadius, aCenter, aAngle) {
 
 		aContext.beginPath();
 		aContext.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
-		aContext.moveTo(this.concaveRectangle[0].x, this.concaveRectangle[0].y);
-		aContext.lineTo(this.concaveRectangle[1].x, this.concaveRectangle[1].y);
-		aContext.lineTo(this.concaveRectangle[2].x, this.concaveRectangle[2].y);
-		aContext.lineTo(this.concaveRectangle[3].x, this.concaveRectangle[3].y);
+		this.rectangle.draw(aContext);
 		aContext.closePath();
 		aContext.fill();
 		aContext.stroke();
