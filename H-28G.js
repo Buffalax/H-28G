@@ -79,7 +79,7 @@ function Game() {
 			Math.random() > 0.5 ?
 				Math.random() > 0.5 ?
 					new EmptyRing(this.radius, this.center, this.angle) :
-					new EmptyRing(this.radius, this.center, this.angle) :
+					new FanRing(this.radius, this.center, this.angle) :
 				Math.random() > 0.5 ?
 					new DoorLockRing(this.radius, this.center, this.angle) :
 					new RectangleRingSingle(this.radius, this.center, this.angle);

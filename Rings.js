@@ -203,3 +203,76 @@ function DoorLockRing(aRadius, aCenter, aAngle) {
 	};
 	this.rescale();
 }
+
+function FanRing(aRadius, aCenter, aAngle) {
+	this.radius = aRadius;
+	this.center = aCenter;
+	this.angle = aAngle;
+
+	this.CIRCLE_RADIUS = 0.3;
+
+	var topMidPoint = new Point(0, 0),
+		topHighPoint = new Point(0, 0),
+		rightLowPoint = new Point(0, 0),
+		bottomHighPoint = new Point(0, 0),
+		leftLowPoint = new Point(0, 0);
+
+	var circleRadius;
+
+	this.rescale = function() {
+		circleRadius = this.radius * this.CIRCLE_RADIUS;
+		topMidPoint.x = this.center.x;
+		topMidPoint.y = this.center.y - circleRadius;
+		topHighPoint.x = this.center.x;
+		topHighPoint.y = this.center.y - this.radius;
+		rightLowPoint.x = this.center.x + circleRadius;
+		rightLowPoint.y = this.center.y;
+		bottomHighPoint.x = this.center.x;
+		bottomHighPoint.y = this.center.y + this.radius;
+		leftLowPoint.x = this.center.x - circleRadius;
+		leftLowPoint.y = this.center.y;
+
+		this.rotate();
+	};
+
+	this.rotate = function() {
+		topMidPoint.rotate(this.angle, this.center);
+		topHighPoint.rotate(this.angle, this.center);
+		rightLowPoint.rotate(this.angle, this.center);
+		bottomHighPoint.rotate(this.angle, this.center);
+		leftLowPoint.rotate(this.angle, this.center);
+	};
+	this.translate = function() {
+
+	};
+
+	this.collisionCheck = function() {
+
+	};
+	this.draw = function(aContext) {
+		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
+		aContext.strokeStyle = '#000000';
+		aContext.fillStyle = '#CCCCCC';
+
+		var currentAngle = this.angle * (Math.PI / 180);
+
+		aContext.beginPath();
+
+		aContext.moveTo(topMidPoint.x, topMidPoint.y);
+		aContext.lineTo(topHighPoint.x, topHighPoint.y);
+		aContext.arc(this.center.x, this.center.y, this.radius, Math.PI * (3 / 2) + currentAngle, 0 + currentAngle, false);
+		aContext.lineTo(rightLowPoint.x, rightLowPoint.y);
+		aContext.arc(this.center.x, this.center.y, circleRadius, 0 + currentAngle, Math.PI * (1 / 2) + currentAngle, false);
+		aContext.lineTo(bottomHighPoint.x, bottomHighPoint.y);
+		aContext.arc(this.center.x, this.center.y, this.radius, Math.PI * (1 / 2) + currentAngle, Math.PI + currentAngle, false);
+		aContext.lineTo(leftLowPoint.x, leftLowPoint.y);
+		aContext.arc(this.center.x, this.center.y, circleRadius, Math.PI + currentAngle, Math.PI * (3 / 2) + currentAngle, false);
+		aContext.lineTo(topMidPoint.x, topMidPoint.y);
+		aContext.closePath();
+
+		aContext.fill();
+		aContext.stroke();
+	};
+
+	this.rescale();
+}
