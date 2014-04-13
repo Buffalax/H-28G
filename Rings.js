@@ -120,4 +120,86 @@ function RectangleRingSingle(aRadius, aCenter, aAngle) {
 	this.rescale();
 }
 
+function DoorLockRing(aRadius, aCenter, aAngle) {
+	this.radius = aRadius;
+	this.center = aCenter;
+	this.angle = aAngle;
 
+	this.CIRCLE_RADIUS = 0.3;
+	this.ANGLE = 60;
+
+	//calculations
+	var s, c, circleRadius,
+		xOffsetSmall, yOffsetSmall, xOffsetBig, yOffsetBig,
+		radAngle, radStartAngle, radEndAngle, angleTo90;
+
+	angleTo90 = 90 - this.ANGLE;
+
+	radAngle = Math.PI * (angleTo90 / 180);
+	s = Math.sin(radAngle);
+	c = Math.cos(radAngle);
+
+	radStartAngle = Math.PI / 2;
+	radEndAngle = Math.PI * ( angleTo90 / 180);
+
+	var topPointLeft = new Point(0, 0),
+		midPointLeft = new Point(0, 0),
+		bottomPointLeft = new Point(0, 0),
+		topPointRight = new Point(0, 0);
+
+	this.rescale = function() {
+		circleRadius = this.radius * this.CIRCLE_RADIUS;
+		xOffsetSmall = c * circleRadius; //b
+		yOffsetSmall = s * circleRadius; //a
+		xOffsetBig = c * this.radius; //b
+		yOffsetBig = s * this.radius; //a
+
+		topPointLeft.x = this.center.x;
+		topPointLeft.y = this.center.y + circleRadius;
+
+		midPointLeft.x = this.center.x;
+		midPointLeft.y = topPointLeft.y + (this.radius - circleRadius) / 2;
+
+		bottomPointLeft.x = this.center.x;
+		bottomPointLeft.y = this.center.y + this.radius;
+
+		topPointRight.x = this.center.x + xOffsetSmall;
+		topPointRight.y = this.center.y + yOffsetSmall;
+		this.rotate();
+	};
+
+	this.rotate = function() {
+		topPointLeft.rotate(this.angle, this.center);
+		midPointLeft.rotate(this.angle, this.center);
+		bottomPointLeft.rotate(this.angle, this.center);
+		topPointRight.rotate(this.angle, this.center);
+	};
+	this.translate = function() {
+
+	};
+
+	this.collisionCheck = function() {
+
+	};
+	this.draw = function(aContext) {
+		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
+		aContext.strokeStyle = '#000000';
+		aContext.fillStyle = '#CCCCCC';
+
+		var currentAngle = this.angle * (Math.PI / 180);
+		//console.log((radStartAngle + currentAngle) + "==" + (radEndAngle + currentAngle));
+		console.log(this.angle + " " + currentAngle);
+		aContext.beginPath();
+		aContext.moveTo(midPointLeft.x, midPointLeft.y);
+		aContext.lineTo(bottomPointLeft.x, bottomPointLeft.y);
+		aContext.arc(this.center.x, this.center.y, this.radius, radStartAngle + currentAngle, radEndAngle + currentAngle, false);
+		aContext.lineTo(topPointRight.x, topPointRight.y);
+		aContext.arc(this.center.x, this.center.y, circleRadius, radEndAngle + currentAngle, radStartAngle + currentAngle, true);
+		aContext.lineTo(midPointLeft.x, midPointLeft.y);
+		aContext.closePath();
+
+		aContext.fill();
+		aContext.stroke();
+	};
+	this.rescale();
+}

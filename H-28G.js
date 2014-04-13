@@ -29,7 +29,7 @@ function Game() {
 	var RING_SPAWN_RATE = 1000;
 	var RING_INITIAL_RADIUS = 10;
 
-	var RING_MAX_ROTATION = 0.05;
+	var RING_MAX_ROTATION = 1;
 
 	var INITIAL_SPEED = 4;
 	var SPEED = INITIAL_SPEED;
@@ -75,7 +75,7 @@ function Game() {
 		this.angle = Math.random() * 360;
 		this.angleIncrement = Math.random() * RING_MAX_ROTATION * (-1 + Math.round(Math.random()) * 2);
 
-		this.type = Math.random() > 0.5 ? new EmptyRing(this.radius, this.center, this.angle) : new RectangleRingSingle(this.radius, this.center, this.angle);
+		this.type = Math.random() > 0.5 ? new EmptyRing(this.radius, this.center, this.angle) : new DoorLockRing(this.radius, this.center, this.angle);
 
 		this.draw = function() {
 			this.type.draw(context);

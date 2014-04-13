@@ -5,9 +5,9 @@ function Point(aX, aY) {
 		if (aPoint.x !== this.x || aPoint.y !== this.y) {
 			this.x -= aPoint.x;
 			this.y -= aPoint.y;
-
-			var s = Math.sin(aAngle);
-			var c = Math.cos(aAngle);
+			var radAngle = (Math.PI*2)*(aAngle/360);
+			var s = Math.sin(radAngle);
+			var c = Math.cos(radAngle);
 
 			var newX = this.x * c - this.y * s;
 			var newY = this.x * s + this.y * c;
