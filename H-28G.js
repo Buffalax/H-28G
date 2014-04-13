@@ -26,7 +26,7 @@ function Game() {
 	var center = new Point(WIDTH / 2, HEIGHT / 2);
 	var MAX_SIDE = Math.max(center.x, center.y);
 
-	var RING_SPAWN_RATE = 1000;
+	var RING_SPAWN_RATE = 2000;
 	var RING_INITIAL_RADIUS = 10;
 
 	var RING_MAX_ROTATION = 1;

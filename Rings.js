@@ -78,14 +78,11 @@ function RectangleRingSingle(aRadius, aCenter, aAngle) {
 	this.RECTANGLE_WIDTH = 0.8;
 	this.RECTANGLE_HEIGHT = 1.6;
 
-	//this.concaveRectangle = [new Point(0, 0), new Point(0, 0), new Point(0, 0), new Point(0, 0)];
-
 	this.rectangle = new ReverseRectangle(new Point(0, 0), 0, 0, 0);
 
 	this.rescale = function() {
 
 		this.rectangle.rescale(
-			//new Point(this.center.x, this.center.y),
 			new Point(this.center.x - this.radius * (this.RECTANGLE_WIDTH / 2), this.center.y - this.radius * (this.RECTANGLE_HEIGHT / 2)),
 			this.RECTANGLE_WIDTH * this.radius,
 			this.RECTANGLE_HEIGHT * this.radius
@@ -128,7 +125,6 @@ function DoorLockRing(aRadius, aCenter, aAngle) {
 	this.CIRCLE_RADIUS = 0.3;
 	this.ANGLE = 60;
 
-	//calculations
 	var s, c, circleRadius,
 		xOffsetSmall, yOffsetSmall, xOffsetBig, yOffsetBig,
 		radAngle, radStartAngle, radEndAngle, angleTo90;
@@ -330,7 +326,7 @@ function HoleRing(aRadius, aCenter, aAngle, aHoles, aHoleRadiusRatio, aDistanceF
 	var distanceFormCenter, holeAngle, holeRadius;
 
 	this.rescale = function() {
-		distanceFormCenter = this.radius * aDistanceFormCenterRatio;
+		distanceFormCenter = this.radius * this.distanceFromCenterRatio;
 		holeAngle = 360 / this.holes;
 		centerPoints[0].x = this.center.x + distanceFormCenter;
 		centerPoints[0].y = this.center.y;
