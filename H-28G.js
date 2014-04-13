@@ -75,7 +75,7 @@ function Game() {
 		this.angle = Math.random() * 360;
 		this.angleIncrement = Math.random() * RING_MAX_ROTATION * (-1 + Math.round(Math.random()) * 2);
 
-		switch (Math.floor(Math.random() * RING_TYPE_COUNT)) {
+		switch (Math.floor(Math.random() * 8)) {
 			case 0:
 				this.type = new EmptyRing(this.radius, this.center, this.angle);
 				break;
@@ -90,6 +90,15 @@ function Game() {
 				break;
 			case 4:
 				this.type = new HalfRing(this.radius, this.center, this.angle);
+				break;
+			case 5:
+				this.type = new HoleRing(this.radius, this.center, this.angle, 3, 0.3, 0.6);
+				break;
+			case 6:
+				this.type = new HoleRing(this.radius, this.center, this.angle, 2, 0.3, 0.4);
+				break;
+			case 7:
+				this.type = new HoleRing(this.radius, this.center, this.angle, 1, 0.4, 0.6);
 				break;
 		}
 

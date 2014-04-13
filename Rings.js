@@ -1,7 +1,6 @@
 var RING_MAX_LINE_WIDTH = 20;
 var canvas = document.getElementById("canvas");
 var MAX_SIDE = Math.max(canvas.width, canvas.height);
-var RING_TYPE_COUNT = 5;
 
 function EmptyRing(aRadius, aCenter, aAngle) {
 	this.radius = aRadius;
@@ -281,9 +280,6 @@ function HalfRing(aRadius, aCenter, aAngle) {
 	this.center = aCenter;
 	this.angle = aAngle;
 
-	this.RECTANGLE_WIDTH = 0.8;
-	this.RECTANGLE_HEIGHT = 1.6;
-
 	this.rescale = function() {
 
 	};
@@ -311,6 +307,68 @@ function HalfRing(aRadius, aCenter, aAngle) {
 		aContext.arc(this.center.x, this.center.y, this.radius, 0 + currentAngle, Math.PI + currentAngle, false);
 		aContext.closePath();
 
+		aContext.fill();
+		aContext.stroke();
+	};
+
+	this.rescale();
+}
+
+function HoleRing(aRadius, aCenter, aAngle, aHoles, aHoleRadiusRatio, aDistanceFormCenterRatio) {
+	this.radius = aRadius;
+	this.center = aCenter;
+	this.angle = aAngle;
+	this.holes = aHoles;
+	this.holeRadiusRatio = aHoleRadiusRatio;
+
+	this.distanceFromCenterRatio = aDistanceFormCenterRatio;
+
+	var centerPoints = [];
+	for (var i = 0; i < this.holes; i++) {
+		centerPoints[i] = new Point(0, 0);
+	}
+	var distanceFormCenter, holeAngle, holeRadius;
+
+	this.rescale = function() {
+		distanceFormCenter = this.radius * aDistanceFormCenterRatio;
+		holeAngle = 360 / this.holes;
+		centerPoints[0].x = this.center.x + distanceFormCenter;
+		centerPoints[0].y = this.center.y;
+		centerPoints[0].rotate(this.angle, this.center);
+		for (var i = 1, len = centerPoints.length; i < len; i++) {
+			centerPoints[i].x = centerPoints[i - 1].x;
+			centerPoints[i].y = centerPoints[i - 1].y;
+			centerPoints[i].rotate(holeAngle, this.center);
+
+		}
+		holeRadius = this.radius * this.holeRadiusRatio;
+	};
+
+	this.rotate = function() {
+
+	};
+
+
+	this.translate = function() {
+
+	};
+
+	this.collisionCheck = function() {
+
+	};
+	this.draw = function(aContext) {
+		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
+		aContext.strokeStyle = '#000000';
+		aContext.fillStyle = '#CCCCCC';
+
+		aContext.beginPath();
+		aContext.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2, false);
+		for (var i = 0, len = centerPoints.length; i < len; i++) {
+			aContext.moveTo(centerPoints[i].x + holeRadius, centerPoints[i].y);
+			aContext.arc(centerPoints[i].x, centerPoints[i].y, holeRadius, 0, Math.PI * 2, true);
+		}
+		aContext.closePath();
+		//aContext.clip();
 		aContext.fill();
 		aContext.stroke();
 	};
