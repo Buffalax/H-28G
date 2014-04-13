@@ -5,7 +5,7 @@ function Point(aX, aY) {
 		if (aPoint.x !== this.x || aPoint.y !== this.y) {
 			this.x -= aPoint.x;
 			this.y -= aPoint.y;
-			var radAngle = (Math.PI*2)*(aAngle/360);
+			var radAngle = (Math.PI * 2) * (aAngle / 360);
 			var s = Math.sin(radAngle);
 			var c = Math.cos(radAngle);
 

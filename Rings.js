@@ -187,8 +187,6 @@ function DoorLockRing(aRadius, aCenter, aAngle) {
 		aContext.fillStyle = '#CCCCCC';
 
 		var currentAngle = this.angle * (Math.PI / 180);
-		//console.log((radStartAngle + currentAngle) + "==" + (radEndAngle + currentAngle));
-		console.log(this.angle + " " + currentAngle);
 		aContext.beginPath();
 		aContext.moveTo(midPointLeft.x, midPointLeft.y);
 		aContext.lineTo(bottomPointLeft.x, bottomPointLeft.y);
