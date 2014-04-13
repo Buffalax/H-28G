@@ -23,13 +23,13 @@ function Game() {
 
 	var WIDTH = canvas.width;
 	var HEIGHT = canvas.height;
-	var CENTER_X = WIDTH / 2;
-	var CENTER_Y = HEIGHT / 2;
-	var MAX_SIDE = Math.max(WIDTH, HEIGHT);
+	var center = new Point(WIDTH / 2, HEIGHT / 2);
+	var MAX_SIDE = Math.max(center.x, center.y);
 
-	var RING_MAX_LINE_WIDTH = 20;
-	var RING_SPAWN_RATE = 1000;
+	var RING_SPAWN_RATE = 2000;
 	var RING_INITIAL_RADIUS = 10;
+
+	var RING_MAX_ROTATION = 1;
 
 	var INITIAL_SPEED = 4;
 	var SPEED = INITIAL_SPEED;
@@ -69,28 +69,57 @@ function Game() {
 		}
 	}
 
-	function emptyRing(radius) {
-		context.beginPath();
-		context.arc(CENTER_X, CENTER_Y, radius, 0, 2 * Math.PI, false);
-		context.lineWidth = RING_MAX_LINE_WIDTH * (radius / MAX_SIDE);
-		context.strokeStyle = '#000000';
-		context.stroke();
-	}
-
 	function Ring() {
 		this.radius = RING_INITIAL_RADIUS;
-		this.centerX = CENTER_X;
-		this.centerY = CENTER_Y;
+		this.center = center;
+		this.angle = Math.random() * 360;
+		this.angleIncrement = Math.random() * RING_MAX_ROTATION * (-1 + Math.round(Math.random()) * 2);
+
+		switch (Math.floor(Math.random() * 8)) {
+			case 0:
+				this.type = new EmptyRing(this.radius, this.center, this.angle);
+				break;
+			case 1:
+				this.type = new FanRing(this.radius, this.center, this.angle);
+				break;
+			case 2:
+				this.type = new DoorLockRing(this.radius, this.center, this.angle);
+				break;
+			case 3:
+				this.type = new RectangleRingSingle(this.radius, this.center, this.angle);
+				break;
+			case 4:
+				this.type = new HalfRing(this.radius, this.center, this.angle);
+				break;
+			case 5:
+				this.type = new HoleRing(this.radius, this.center, this.angle, 3, 0.3, 0.6);
+				break;
+			case 6:
+				this.type = new HoleRing(this.radius, this.center, this.angle, 2, 0.3, 0.4);
+				break;
+			case 7:
+				this.type = new HoleRing(this.radius, this.center, this.angle, 1, 0.4, 0.6);
+				break;
+		}
 
 		this.draw = function() {
-			emptyRing(this.radius);
+			this.type.draw(context);
 		};
 
 		this.act = function() {
-			if (this.radius > MAX_SIDE) {
+			if (this.radius > MAX_SIDE * 4) {
 				rings.pop();
 			}
 			this.radius += SPEED * (this.radius / MAX_SIDE);
+			this.angle += this.angleIncrement;
+			if (this.angle >= 360) {
+				this.angle -= 360;
+			} else if (this.angle < 0) {
+				this.angle += 360
+			}
+			this.type.radius = this.radius;
+			this.type.angle = this.angle;
+			this.type.rescale();
 		};
 	}
 
