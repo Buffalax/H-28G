@@ -75,14 +75,23 @@ function Game() {
 		this.angle = Math.random() * 360;
 		this.angleIncrement = Math.random() * RING_MAX_ROTATION * (-1 + Math.round(Math.random()) * 2);
 
-		this.type =
-			Math.random() > 0.5 ?
-				Math.random() > 0.5 ?
-					new EmptyRing(this.radius, this.center, this.angle) :
-					new FanRing(this.radius, this.center, this.angle) :
-				Math.random() > 0.5 ?
-					new DoorLockRing(this.radius, this.center, this.angle) :
-					new RectangleRingSingle(this.radius, this.center, this.angle);
+		switch (Math.floor(Math.random() * RING_TYPE_COUNT)) {
+			case 0:
+				this.type = new EmptyRing(this.radius, this.center, this.angle);
+				break;
+			case 1:
+				this.type = new FanRing(this.radius, this.center, this.angle);
+				break;
+			case 2:
+				this.type = new DoorLockRing(this.radius, this.center, this.angle);
+				break;
+			case 3:
+				this.type = new RectangleRingSingle(this.radius, this.center, this.angle);
+				break;
+			case 4:
+				this.type = new HalfRing(this.radius, this.center, this.angle);
+				break;
+		}
 
 		this.draw = function() {
 			this.type.draw(context);

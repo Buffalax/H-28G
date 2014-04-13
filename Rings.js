@@ -1,6 +1,7 @@
 var RING_MAX_LINE_WIDTH = 20;
 var canvas = document.getElementById("canvas");
 var MAX_SIDE = Math.max(canvas.width, canvas.height);
+var RING_TYPE_COUNT = 5;
 
 function EmptyRing(aRadius, aCenter, aAngle) {
 	this.radius = aRadius;
@@ -266,6 +267,48 @@ function FanRing(aRadius, aCenter, aAngle) {
 		aContext.lineTo(leftLowPoint.x, leftLowPoint.y);
 		aContext.arc(this.center.x, this.center.y, circleRadius, Math.PI + currentAngle, Math.PI * (3 / 2) + currentAngle, false);
 		aContext.lineTo(topMidPoint.x, topMidPoint.y);
+		aContext.closePath();
+
+		aContext.fill();
+		aContext.stroke();
+	};
+
+	this.rescale();
+}
+
+function HalfRing(aRadius, aCenter, aAngle) {
+	this.radius = aRadius;
+	this.center = aCenter;
+	this.angle = aAngle;
+
+	this.RECTANGLE_WIDTH = 0.8;
+	this.RECTANGLE_HEIGHT = 1.6;
+
+	this.rescale = function() {
+
+	};
+
+	this.rotate = function() {
+
+	};
+
+
+	this.translate = function() {
+
+	};
+
+	this.collisionCheck = function() {
+
+	};
+	this.draw = function(aContext) {
+		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
+		aContext.strokeStyle = '#000000';
+		aContext.fillStyle = '#CCCCCC';
+
+		var currentAngle = this.angle * (Math.PI / 180);
+
+		aContext.beginPath();
+		aContext.arc(this.center.x, this.center.y, this.radius, 0 + currentAngle, Math.PI + currentAngle, false);
 		aContext.closePath();
 
 		aContext.fill();
