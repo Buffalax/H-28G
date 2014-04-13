@@ -16,10 +16,39 @@ var Util = (function() {
 	};
 })();
 
+function FPSCounter(aUpdateInterval, aContext) {
+	var count = 0;
+	var fps = '...';
+	var time = +new Date();
+	var modifier = 1000 / aUpdateInterval;
+
+	var Y = aContext.canvas.height - 10;
+	var X = aContext.canvas.width - 50;
+
+	this.update = function(aTime) {
+		var diff = aTime - time;
+
+		++count;
+		if (diff > aUpdateInterval) {
+			fps = 'FPS: ' + Math.floor(count * modifier);
+
+			count = 0;
+			time = aTime;
+		}
+	};
+
+	this.draw = function() {
+		aContext.fillStyle = 'red';
+		aContext.font = '10px Verdana';
+		aContext.fillText(fps, X, Y);
+	};
+}
+
 function Game() {
 	var rings = [];
 	var canvas = document.getElementById("canvas");
 	var context = canvas.getContext('2d');
+	var fpsCounter = new FPSCounter(1000, context);
 
 	var WIDTH = canvas.width;
 	var HEIGHT = canvas.height;
@@ -64,9 +93,12 @@ function Game() {
 
 	function draw() {
 		drawBgr();
+
 		for (var i = 0, len = rings.length; i < len; i++) {
 			rings[i].draw();
 		}
+
+		fpsCounter.draw();
 	}
 
 	function emptyRing(radius) {
@@ -95,10 +127,10 @@ function Game() {
 	}
 
 	var lastSpawn = 0;
-
 	function render() {
 		var now = +Date.now();
 
+		fpsCounter.update(now);
 		if ((lastSpawn + RING_SPAWN_RATE) < now) {
 			spawnRing();
 			lastSpawn = lastSpawn ? (lastSpawn + RING_SPAWN_RATE) : now;
