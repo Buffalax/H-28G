@@ -81,7 +81,7 @@ function Game() {
 	}
 
 	function action(aDelta) {
-		for (var i = 0, len = rings.length; i < len; i++) {
+		for (var i = 0; i < rings.length; i++) {
 			rings[i].act();
 		}
 	}
