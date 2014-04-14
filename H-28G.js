@@ -99,7 +99,14 @@ function Game() {
 			rings[i].draw();
 		}
 
+		drawSpeed();
 		fpsCounter.draw();
+	}
+
+	function drawSpeed() {
+		context.fillStyle = 'red';
+		context.font = '10px Verdana';
+		context.fillText('SPD: ' + SPEED.toFixed(3), WIDTH - 125, HEIGHT - 10);
 	}
 
 	function Ring() {
