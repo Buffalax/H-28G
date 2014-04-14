@@ -53,16 +53,16 @@ function Game() {
 	var WIDTH = canvas.width;
 	var HEIGHT = canvas.height;
 	var center = new Point(WIDTH / 2, HEIGHT / 2);
-	var MAX_SIDE = Math.max(center.x, center.y);
+	var MAX_SIDE = Math.max(center.x, center.y) / 4;
 
 	var RING_SPAWN_RATE = 2000;
 	var RING_INITIAL_RADIUS = 10;
 
 	var RING_MAX_ROTATION = 1;
 
-	var INITIAL_SPEED = 4;
+	var INITIAL_SPEED = 0.8;
 	var SPEED = INITIAL_SPEED;
-	var SPEED_INCREMENT = 0;
+	var SPEED_INCREMENT = 0.0005;
 	var PAUSE_TRESHOLD = 3000;
 
 	var ticker = (function() {
@@ -169,9 +169,11 @@ function Game() {
 
 		lastTick = now;
 		fpsCounter.update(now);
-		if ((lastSpawn + RING_SPAWN_RATE) < now) {
+
+		var spawnRate = RING_SPAWN_RATE * INITIAL_SPEED / SPEED;
+		if ((lastSpawn + spawnRate) < now) {
 			spawnRing();
-			lastSpawn += RING_SPAWN_RATE;
+			lastSpawn += spawnRate;
 		}
 
 		action(delta);
