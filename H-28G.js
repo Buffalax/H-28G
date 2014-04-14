@@ -63,6 +63,7 @@ function Game() {
 	var INITIAL_SPEED = 4;
 	var SPEED = INITIAL_SPEED;
 	var SPEED_INCREMENT = 0;
+	var PAUSE_TRESHOLD = 3000;
 
 	var ticker = (function() {
 		return window.requestAnimationFrame
@@ -79,7 +80,7 @@ function Game() {
 		rings.unshift(new Ring());
 	}
 
-	function action() {
+	function action(aDelta) {
 		for (var i = 0, len = rings.length; i < len; i++) {
 			rings[i].act();
 		}
@@ -155,17 +156,25 @@ function Game() {
 		};
 	}
 
-	var lastSpawn = 0;
+	var lastTick = +Date.now();
+	var lastSpawn = lastTick - RING_SPAWN_RATE;
 	function render() {
 		var now = +Date.now();
 
+		var delta = now - lastTick;
+		if (delta > PAUSE_TRESHOLD) {
+			// triggerPause(delta, now, lastTick);
+			lastSpawn += delta;
+		}
+
+		lastTick = now;
 		fpsCounter.update(now);
 		if ((lastSpawn + RING_SPAWN_RATE) < now) {
 			spawnRing();
-			lastSpawn = lastSpawn ? (lastSpawn + RING_SPAWN_RATE) : now;
+			lastSpawn += RING_SPAWN_RATE;
 		}
 
-		action();
+		action(delta);
 		draw();
 		SPEED += SPEED_INCREMENT;
 	}
