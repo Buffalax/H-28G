@@ -3,7 +3,7 @@
 
 var Util = (function() {
 	return {
-		oncef: function(aFunction) {
+		singleRun: function(aFunction) {
 			var started = false;
 
 			return function() {
@@ -12,6 +12,9 @@ var Util = (function() {
 					aFunction.apply(this, arguments);
 				}
 			};
+		},
+
+		noop: function() {
 		}
 	};
 })();
@@ -155,7 +158,7 @@ function Game() {
 			if (this.angle >= 360) {
 				this.angle -= 360;
 			} else if (this.angle < 0) {
-				this.angle += 360
+				this.angle += 360;
 			}
 			this.type.radius = this.radius;
 			this.type.angle = this.angle;
@@ -188,13 +191,24 @@ function Game() {
 		SPEED += SPEED_INCREMENT;
 	}
 
-	function loop() {
+	var loop = function() {
 		ticker(loop);
 		render();
+	};
+
+	function mouseMoveListener(aEvent) {
+		center.x = WIDTH - aEvent.clientX;
+		center.y = HEIGHT - aEvent.clientY;
 	}
 
-	return {
-		start: Util.oncef(loop)
+	this.start = Util.singleRun(function() {
+		canvas.addEventListener('mousemove', mouseMoveListener, false);
+		loop();
+	});
+
+	this.destroy = function() {
+		canvas.removeEventListener('mousemove', mouseMoveListener, false);
+		loop = Util.noop;
 	};
 }
 
