@@ -18,6 +18,24 @@ function Point(aX, aY) {
 	};
 }
 
+Point.singularCirclePoint = function(aAngle) {
+	return new Point(Math.cos(aAngle), Math.sin(aAngle));
+};
+
+Point.prototype.multiply = function(aXMult, aYMult) {
+	var yMult = (arguments.length == 2) ? aYMult : aXMult; 
+	return new Point(this.x * aXMult, this.y * yMult);
+};
+
+Point.prototype.translate = function(aXDiff, aYDiff) {
+	var xDiff = aXDiff || 0;
+	var yDiff = aYDiff || 0;
+
+	return new Point(this.x + xDiff, this.y + yDiff);
+};
+
+// http://jsperf.com/js-getter-vs-prop
+
 function Line(aP1, aP2) {
 	this.p1 = aP1;
 	this.p2 = aP2;

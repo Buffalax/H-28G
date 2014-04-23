@@ -2,7 +2,11 @@
 /*jshint laxbreak:true*/
 
 var Util = (function() {
+	var PI2 = Math.PI * 2;
+
 	return {
+		PI2: PI2,
+
 		singleRun: function(aFunction) {
 			var started = false;
 
@@ -15,6 +19,26 @@ var Util = (function() {
 		},
 
 		noop: function() {
+		},
+
+		degToRad: function(aDegrees) {
+			return aDegrees * Math.PI / 180;
+		},
+
+		normalizeAngle: function(aAngle) {
+			while (aAngle < 0) {
+				aAngle += PI2;
+			}
+
+			return aAngle % PI2;
+		},
+
+		normalizeAngleSimple: function(aAngle) {
+			if (aAngle < 0) {
+				return aAngle + PI2;
+			}
+
+			return (aAngle > PI2) ? (aAngle - PI2) : aAngle;
 		}
 	};
 })();
@@ -47,6 +71,52 @@ function FPSCounter(aUpdateInterval, aContext) {
 	};
 }
 
+function Tunnel(aContext, aCenter) {
+	var rays = 6;
+	var offset = 0;
+	var delta = Util.degToRad(2);
+	var speed = Util.degToRad(0.5);
+	var rayAngle = 2 * Math.PI / rays;
+
+	var center = new Point(aContext.canvas.width / 2, aContext.canvas.height / 2);
+	var outerRadius = Math.max(aContext.canvas.height, aContext.canvas.width);
+	var innerRadius = outerRadius / 20;
+
+	this.act = function() {
+		offset = Util.normalizeAngleSimple(offset + speed);
+	};
+
+	this.draw = function() {
+		aContext.lineWidth = 1;
+		aContext.fillStyle = 'purple';
+
+		var i;
+		for (i = 0; i < rays; ++i) {
+			var angle = offset + (i * rayAngle);
+
+			var angle1Point = Point.singularCirclePoint(angle);
+			var angle2Point = Point.singularCirclePoint(angle + delta);
+
+			var outerPoint1 = angle1Point.multiply(outerRadius).translate(aCenter.x, aCenter.y);
+			var outerPoint2 = angle2Point.multiply(outerRadius).translate(aCenter.x, aCenter.y);
+
+			var innerPoint1 = angle1Point.multiply(innerRadius).translate(aCenter.x, aCenter.y);
+			var innerPoint2 = angle2Point.multiply(innerRadius).translate(aCenter.x, aCenter.y);
+
+			aContext.beginPath();
+
+			aContext.moveTo(outerPoint1.x, outerPoint1.y);
+			aContext.lineTo(innerPoint1.x, innerPoint1.y);
+			aContext.lineTo(innerPoint2.x, innerPoint2.y);
+			aContext.lineTo(outerPoint2.x, outerPoint2.y);
+
+			aContext.closePath();
+
+			aContext.fill();
+		}
+	};
+}
+
 function Game() {
 	var rings = [];
 	var canvas = document.getElementById("canvas");
@@ -56,6 +126,7 @@ function Game() {
 	var WIDTH = canvas.width;
 	var HEIGHT = canvas.height;
 	var center = new Point(WIDTH / 2, HEIGHT / 2);
+	var tunnel = new Tunnel(context, center);
 	var MAX_SIDE = Math.max(center.x, center.y) / 4;
 
 	var RING_SPAWN_RATE = 2000;
@@ -84,6 +155,8 @@ function Game() {
 	}
 
 	function action(aDelta) {
+		tunnel.act();
+
 		for (var i = 0; i < rings.length; i++) {
 			rings[i].act();
 		}
@@ -97,6 +170,7 @@ function Game() {
 
 	function draw() {
 		drawBgr();
+		tunnel.draw();
 
 		for (var i = 0, len = rings.length; i < len; i++) {
 			rings[i].draw();
