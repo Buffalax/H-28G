@@ -165,6 +165,7 @@ function Game() {
 
 	var lastTick = +Date.now();
 	var lastSpawn = lastTick - RING_SPAWN_RATE;
+
 	function render() {
 		var now = +Date.now();
 
@@ -199,3 +200,4 @@ function Game() {
 }
 
 new Game().start();
+//Test
