@@ -58,15 +58,15 @@ function Game() {
 	var RING_SPAWN_RATE = 2000;
 	var RING_INITIAL_RADIUS = 10;
 
-	var RING_MAX_ROTATION = 1;
+	var RING_MAX_ROTATION = 180;
 
-	var INITIAL_SPEED = 4;
+	var INITIAL_SPEED = 10;
 	var SPEED = INITIAL_SPEED;
 	//var SPEED_INCREMENT = 0.0005;
-	//var PAUSE_TRESHOLD = 3000;
+	var PAUSE_TRESHOLD = 3000;
 
 	var INITIAL_DISTANCE = 1000;
-	var ACCELERATION = 0.05;
+	var ACCELERATION = 0.1;
 
 	var ticker = (function() {
 		return window.requestAnimationFrame
@@ -80,13 +80,21 @@ function Game() {
 	})();
 
 	function spawnRing() {
-		rings.unshift(new Ring());
+		//currently the rings always spawn far away in the distance
+		rings.unshift(new Ring(INITIAL_DISTANCE));
 	}
 
 	function action(aDelta) {
+		//first convert the elapsed time from milliseconds to seconds
+		var delta = aDelta /= 1000;
+		//calculating dinstance travelled between the last and current seconds
+		var distanceTravelled = SPEED * delta + (ACCELERATION * delta * delta ) / 2;
 		for (var i = 0; i < rings.length; i++) {
-			rings[i].act();
+			//the rings should calculate their new position on the z axis and if necessary do collision checks + destroy + spawn
+			rings[i].act(distanceTravelled, delta);
 		}
+		//now that the rings have moved according to the elapsed time we can calculate the base speed for the next frame
+		SPEED += ACCELERATION * aDelta;
 	}
 
 	function drawBgr() {
@@ -112,7 +120,9 @@ function Game() {
 		context.fillText('SPD: ' + SPEED.toFixed(3), WIDTH - 125, HEIGHT - 10);
 	}
 
-	function Ring() {
+	function Ring(aZ) {
+		// the z field holds the distance between the object and the camera (camera is at 0)
+		this.z = aZ;
 		this.radius = RING_INITIAL_RADIUS;
 		this.center = center;
 		this.angle = Math.random() * 360;
@@ -149,12 +159,15 @@ function Game() {
 			this.type.draw(context);
 		};
 
-		this.act = function() {
-			if (this.radius > MAX_SIDE * 4) {
+		this.act = function(aDistanceTravelled, aDelta) {
+			//calculate new z-position
+			this.z -= aDistanceTravelled;
+			//if the ring is beyond the camera - destroy it
+			if (this.z < 100) {
 				rings.pop();
 			}
-			this.radius += SPEED * (this.radius / MAX_SIDE);
-			this.angle += this.angleIncrement;
+			this.radius = ((MAX_SIDE/2) / INITIAL_DISTANCE) * (INITIAL_DISTANCE - this.z);
+			this.angle += this.angleIncrement * aDelta;
 			if (this.angle >= 360) {
 				this.angle -= 360;
 			} else if (this.angle < 0) {
@@ -189,7 +202,6 @@ function Game() {
 
 		action(delta);
 		draw();
-		SPEED += SPEED_INCREMENT;
 	}
 
 	function loop() {
