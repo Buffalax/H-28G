@@ -2,8 +2,12 @@
 /*jshint laxbreak:true*/
 
 var Util = (function() {
+	var PI2 = Math.PI * 2;
+
 	return {
-		oncef: function(aFunction) {
+		PI2: PI2,
+
+		singleRun: function(aFunction) {
 			var started = false;
 
 			return function() {
@@ -12,6 +16,29 @@ var Util = (function() {
 					aFunction.apply(this, arguments);
 				}
 			};
+		},
+
+		noop: function() {
+		},
+
+		degToRad: function(aDegrees) {
+			return aDegrees * Math.PI / 180;
+		},
+
+		normalizeAngle: function(aAngle) {
+			while (aAngle < 0) {
+				aAngle += PI2;
+			}
+
+			return aAngle % PI2;
+		},
+
+		normalizeAngleSimple: function(aAngle) {
+			if (aAngle < 0) {
+				return aAngle + PI2;
+			}
+
+			return (aAngle > PI2) ? (aAngle - PI2) : aAngle;
 		}
 	};
 })();
@@ -48,6 +75,52 @@ function penta(aX) {
 	return aX * aX * aX * aX * aX;
 }
 
+function Tunnel(aContext, aCenter) {
+	var rays = 6;
+	var offset = 0;
+	var delta = Util.degToRad(2);
+	var speed = Util.degToRad(0.5);
+	var rayAngle = 2 * Math.PI / rays;
+
+	var center = new Point(aContext.canvas.width / 2, aContext.canvas.height / 2);
+	var outerRadius = Math.max(aContext.canvas.height, aContext.canvas.width);
+	var innerRadius = outerRadius / 20;
+
+	this.act = function() {
+		offset = Util.normalizeAngleSimple(offset + speed);
+	};
+
+	this.draw = function() {
+		aContext.lineWidth = 1;
+		aContext.fillStyle = 'purple';
+
+		var i;
+		for (i = 0; i < rays; ++i) {
+			var angle = offset + (i * rayAngle);
+
+			var angle1Point = Point.singularCirclePoint(angle);
+			var angle2Point = Point.singularCirclePoint(angle + delta);
+
+			var outerPoint1 = angle1Point.multiply(outerRadius).translate(aCenter.x, aCenter.y);
+			var outerPoint2 = angle2Point.multiply(outerRadius).translate(aCenter.x, aCenter.y);
+
+			var innerPoint1 = angle1Point.multiply(innerRadius).translate(aCenter.x, aCenter.y);
+			var innerPoint2 = angle2Point.multiply(innerRadius).translate(aCenter.x, aCenter.y);
+
+			aContext.beginPath();
+
+			aContext.moveTo(outerPoint1.x, outerPoint1.y);
+			aContext.lineTo(innerPoint1.x, innerPoint1.y);
+			aContext.lineTo(innerPoint2.x, innerPoint2.y);
+			aContext.lineTo(outerPoint2.x, outerPoint2.y);
+
+			aContext.closePath();
+
+			aContext.fill();
+		}
+	};
+}
+
 function Game() {
 	var rings = [];
 	var canvas = document.getElementById("canvas");
@@ -57,6 +130,7 @@ function Game() {
 	var WIDTH = canvas.width;
 	var HEIGHT = canvas.height;
 	var center = new Point(WIDTH / 2, HEIGHT / 2);
+	var tunnel = new Tunnel(context, center);
 	var MAX_SIDE = Math.max(center.x, center.y);
 
 	var RING_INITIAL_RADIUS = 10;
@@ -87,15 +161,19 @@ function Game() {
 
 	function action(aDelta) {
 		//first convert the elapsed time from milliseconds to seconds
-		var delta = aDelta /= 1000;
+		var delta = aDelta / 1000;
+
 		//calculating dinstance travelled between the last and current seconds
 		var distanceTravelled = SPEED * delta + (ACCELERATION * delta * delta ) / 2;
 		for (var i = 0, len = rings.length; i < len; i++) {
 			//the rings should calculate their new position on the z axis and if necessary do collision checks + destroy + spawn
 			rings[i].act(distanceTravelled, delta);
 		}
+
+		tunnel.act();
+
 		//now that the rings have moved according to the elapsed time we can calculate the base speed for the next frame
-		SPEED += ACCELERATION * aDelta;
+		SPEED += ACCELERATION * delta;
 	}
 
 	function drawBgr() {
@@ -106,6 +184,7 @@ function Game() {
 
 	function draw() {
 		drawBgr();
+		tunnel.draw();
 
 		for (var i = rings.length - 1; i >= 0; i--) {
 			rings[i].draw();
@@ -173,7 +252,7 @@ function Game() {
 			if (this.angle >= 360) {
 				this.angle -= 360;
 			} else if (this.angle < 0) {
-				this.angle += 360
+				this.angle += 360;
 			}
 			this.type.radius = this.radius;
 			this.type.angle = this.angle;
@@ -195,9 +274,14 @@ function Game() {
 		draw();
 	}
 
-	function loop() {
+	var loop = function() {
 		ticker(loop);
 		render();
+	};
+
+	function mouseMoveListener(aEvent) {
+		center.x = WIDTH - aEvent.clientX;
+		center.y = HEIGHT - aEvent.clientY;
 	}
 
 	function init() {
@@ -205,22 +289,19 @@ function Game() {
 		spawnRing(1000);
 		spawnRing(1250);
 		spawnRing(1500);
-//		spawnRing(1500);
-//		spawnRing(1250);
-//		spawnRing(1000);
-//		spawnRing(750);
 	}
 
-	this.start = function() {
+	this.start = Util.singleRun(function() {
+		canvas.addEventListener('mousemove', mouseMoveListener, false);
+
 		init();
 		loop();
-	}
+	});
 
-//	return {
-//		start:
-//			Util.oncef(loop)
-//	};
+	this.destroy = function() {
+		canvas.removeEventListener('mousemove', mouseMoveListener, false);
+		loop = Util.noop;
+	};
 }
 
 new Game().start();
-//Test
