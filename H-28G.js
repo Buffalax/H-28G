@@ -44,6 +44,10 @@ function FPSCounter(aUpdateInterval, aContext) {
 	};
 }
 
+function penta(aX){
+	return aX*aX*aX*aX*aX;
+}
+
 function Game() {
 	var rings = [];
 	var canvas = document.getElementById("canvas");
@@ -55,14 +59,13 @@ function Game() {
 	var center = new Point(WIDTH / 2, HEIGHT / 2);
 	//var MAX_SIDE = Math.max(center.x, center.y) / 4;
 
-	var RING_SPAWN_RATE = 2000;
+	var RING_SPAWN_RATE = 3000;
 	var RING_INITIAL_RADIUS = 10;
 
-	var RING_MAX_ROTATION = 180;
+	var RING_MAX_ROTATION = 60;
 
-	var INITIAL_SPEED = 10;
+	var INITIAL_SPEED = 60;
 	var SPEED = INITIAL_SPEED;
-	//var SPEED_INCREMENT = 0.0005;
 	var PAUSE_TRESHOLD = 3000;
 
 	var INITIAL_DISTANCE = 1000;
@@ -81,7 +84,7 @@ function Game() {
 
 	function spawnRing() {
 		//currently the rings always spawn far away in the distance
-		rings.unshift(new Ring(INITIAL_DISTANCE));
+		rings.unshift(new Ring(INITIAL_DISTANCE/2));
 	}
 
 	function action(aDelta) {
@@ -163,10 +166,10 @@ function Game() {
 			//calculate new z-position
 			this.z -= aDistanceTravelled;
 			//if the ring is beyond the camera - destroy it
-			if (this.z < 100) {
+			if (this.z < 0) {
 				rings.pop();
 			}
-			this.radius = ((MAX_SIDE/2) / INITIAL_DISTANCE) * (INITIAL_DISTANCE - this.z);
+			this.radius = MAX_SIDE * penta((INITIAL_DISTANCE - this.z)/INITIAL_DISTANCE);
 			this.angle += this.angleIncrement * aDelta;
 			if (this.angle >= 360) {
 				this.angle -= 360;
