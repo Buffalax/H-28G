@@ -82,7 +82,7 @@ function Game() {
 
 	function spawnRing(aDistance) {
 		//currently the rings always spawn far away in the distance
-		rings.unshift(new Ring(aDistance));
+		rings.push(new Ring(aDistance));
 	}
 
 	function action(aDelta) {
@@ -90,7 +90,7 @@ function Game() {
 		var delta = aDelta /= 1000;
 		//calculating dinstance travelled between the last and current seconds
 		var distanceTravelled = SPEED * delta + (ACCELERATION * delta * delta ) / 2;
-		for (var i = 0; i < rings.length; i++) {
+		for (var i = 0, len = rings.length; i < len; i++) {
 			//the rings should calculate their new position on the z axis and if necessary do collision checks + destroy + spawn
 			rings[i].act(distanceTravelled, delta);
 		}
@@ -107,7 +107,7 @@ function Game() {
 	function draw() {
 		drawBgr();
 
-		for (var i = 0, len = rings.length; i < len; i++) {
+		for (var i = rings.length - 1; i >= 0; i--) {
 			rings[i].draw();
 		}
 
@@ -161,13 +161,13 @@ function Game() {
 		};
 
 		this.act = function(aDistanceTravelled, aDelta) {
-			//calculate new z-position
-			this.z -= aDistanceTravelled;
 			//if the ring is beyond the camera - destroy it
 			if (this.z < 0) {
-				rings.pop();
+				rings.shift();
 				spawnRing(INITIAL_DISTANCE + this.z);
 			}
+			//calculate new z-position
+			this.z -= aDistanceTravelled;
 			this.radius = MAX_SIDE * penta((INITIAL_DISTANCE - Math.min(this.z, INITIAL_DISTANCE)) / INITIAL_DISTANCE);
 			this.angle += this.angleIncrement * aDelta;
 			if (this.angle >= 360) {
@@ -205,6 +205,10 @@ function Game() {
 		spawnRing(1000);
 		spawnRing(1250);
 		spawnRing(1500);
+//		spawnRing(1500);
+//		spawnRing(1250);
+//		spawnRing(1000);
+//		spawnRing(750);
 	}
 
 	this.start = function() {
