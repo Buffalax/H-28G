@@ -44,8 +44,8 @@ function FPSCounter(aUpdateInterval, aContext) {
 	};
 }
 
-function penta(aX){
-	return aX*aX*aX*aX*aX;
+function penta(aX) {
+	return aX * aX * aX * aX * aX;
 }
 
 function Game() {
@@ -57,16 +57,14 @@ function Game() {
 	var WIDTH = canvas.width;
 	var HEIGHT = canvas.height;
 	var center = new Point(WIDTH / 2, HEIGHT / 2);
-	//var MAX_SIDE = Math.max(center.x, center.y) / 4;
+	var MAX_SIDE = Math.max(center.x, center.y);
 
-	var RING_SPAWN_RATE = 3000;
 	var RING_INITIAL_RADIUS = 10;
 
 	var RING_MAX_ROTATION = 60;
 
 	var INITIAL_SPEED = 60;
 	var SPEED = INITIAL_SPEED;
-	var PAUSE_TRESHOLD = 3000;
 
 	var INITIAL_DISTANCE = 1000;
 	var ACCELERATION = 0.1;
@@ -82,9 +80,9 @@ function Game() {
 		};
 	})();
 
-	function spawnRing() {
+	function spawnRing(aDistance) {
 		//currently the rings always spawn far away in the distance
-		rings.unshift(new Ring(INITIAL_DISTANCE/2));
+		rings.unshift(new Ring(aDistance));
 	}
 
 	function action(aDelta) {
@@ -168,8 +166,9 @@ function Game() {
 			//if the ring is beyond the camera - destroy it
 			if (this.z < 0) {
 				rings.pop();
+				spawnRing(INITIAL_DISTANCE + this.z);
 			}
-			this.radius = MAX_SIDE * penta((INITIAL_DISTANCE - this.z)/INITIAL_DISTANCE);
+			this.radius = MAX_SIDE * penta((INITIAL_DISTANCE - Math.min(this.z, INITIAL_DISTANCE)) / INITIAL_DISTANCE);
 			this.angle += this.angleIncrement * aDelta;
 			if (this.angle >= 360) {
 				this.angle -= 360;
@@ -183,25 +182,14 @@ function Game() {
 	}
 
 	var lastTick = +Date.now();
-	var lastSpawn = lastTick - RING_SPAWN_RATE;
 
 	function render() {
 		var now = +Date.now();
 
 		var delta = now - lastTick;
-		if (delta > PAUSE_TRESHOLD) {
-			// triggerPause(delta, now, lastTick);
-			lastSpawn += delta;
-		}
 
 		lastTick = now;
 		fpsCounter.update(now);
-
-		var spawnRate = RING_SPAWN_RATE * INITIAL_SPEED / SPEED;
-		if ((lastSpawn + spawnRate) < now) {
-			spawnRing();
-			lastSpawn += spawnRate;
-		}
 
 		action(delta);
 		draw();
@@ -212,9 +200,22 @@ function Game() {
 		render();
 	}
 
-	return {
-		start: Util.oncef(loop)
-	};
+	function init() {
+		spawnRing(750);
+		spawnRing(1000);
+		spawnRing(1250);
+		spawnRing(1500);
+	}
+
+	this.start = function() {
+		init();
+		loop();
+	}
+
+//	return {
+//		start:
+//			Util.oncef(loop)
+//	};
 }
 
 new Game().start();
