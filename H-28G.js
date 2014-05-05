@@ -182,8 +182,6 @@ function Game() {
 		var h = HEIGHT / 2;
 		var ky = Util.clamp((h - mousePosition.y) / h, -0.7, 0.7);
 
-		console.log('kx=', kx, ', ky=', ky);
-
 		for (var i = 0, len = rings.length; i < len; i++) {
 			//the rings should calculate their new position on the z axis and if necessary do collision checks + destroy + spawn
 			rings[i].act(distanceTravelled, delta, kx, ky);
