@@ -252,10 +252,10 @@ function Game() {
 				this.type = new HoleRing(this.radius, this.center, this.angle, 3, 0.3, 0.6);
 				break;
 			case 6:
-				this.type = new HoleRing(this.radius, this.center, this.angle, 2, 0.3, 0.4);
+				this.type = new HoleRing(this.radius, this.center, this.angle, 2, 0.35, 0.55);
 				break;
 			case 7:
-				this.type = new HoleRing(this.radius, this.center, this.angle, 1, 0.4, 0.6);
+				this.type = new HoleRing(this.radius, this.center, this.angle, 1, 0.4, 0.5);
 				break;
 		}
 
