@@ -39,6 +39,10 @@ var Util = (function() {
 			}
 
 			return (aAngle > PI2) ? (aAngle - PI2) : aAngle;
+		},
+
+		clamp: function(aX, aMin, aMax) {
+			return Math.min(aMax, Math.max(aMin, aX));
 		}
 	};
 })();
@@ -76,6 +80,8 @@ function penta(aX) {
 }
 
 function Tunnel(aContext, aCenter) {
+	var kx;
+	var ky;
 	var rays = 6;
 	var offset = 0;
 	var delta = Util.degToRad(2);
@@ -86,7 +92,10 @@ function Tunnel(aContext, aCenter) {
 	var outerRadius = Math.max(aContext.canvas.height, aContext.canvas.width);
 	var innerRadius = outerRadius / 20;
 
-	this.act = function() {
+	this.act = function(aKX, aKY) {
+		kx = aKX;
+		ky = aKY;
+
 		offset = Util.normalizeAngleSimple(offset + speed);
 	};
 
@@ -101,11 +110,11 @@ function Tunnel(aContext, aCenter) {
 			var angle1Point = Point.singularCirclePoint(angle);
 			var angle2Point = Point.singularCirclePoint(angle + delta);
 
-			var outerPoint1 = angle1Point.multiply(outerRadius).translate(aCenter.x, aCenter.y);
-			var outerPoint2 = angle2Point.multiply(outerRadius).translate(aCenter.x, aCenter.y);
+			var outerPoint1 = angle1Point.multiply(outerRadius).translate(aCenter.x + outerRadius * kx, aCenter.y + outerRadius * ky);
+			var outerPoint2 = angle2Point.multiply(outerRadius).translate(aCenter.x + outerRadius * kx, aCenter.y + outerRadius * ky);
 
-			var innerPoint1 = angle1Point.multiply(innerRadius).translate(aCenter.x, aCenter.y);
-			var innerPoint2 = angle2Point.multiply(innerRadius).translate(aCenter.x, aCenter.y);
+			var innerPoint1 = angle1Point.multiply(innerRadius).translate(aCenter.x + innerRadius * kx, aCenter.y + innerRadius * ky);
+			var innerPoint2 = angle2Point.multiply(innerRadius).translate(aCenter.x + innerRadius * kx, aCenter.y + innerRadius * ky);
 
 			aContext.beginPath();
 
@@ -130,6 +139,7 @@ function Game() {
 	var WIDTH = canvas.width;
 	var HEIGHT = canvas.height;
 	var center = new Point(WIDTH / 2, HEIGHT / 2);
+	var mousePosition = center.translate();
 	var tunnel = new Tunnel(context, center);
 	var MAX_SIDE = Math.max(center.x, center.y);
 
@@ -141,7 +151,7 @@ function Game() {
 	var SPEED = INITIAL_SPEED;
 
 	var INITIAL_DISTANCE = 1000;
-	var ACCELERATION = 0.1;
+	var ACCELERATION = 5;
 
 	var ticker = (function() {
 		return window.requestAnimationFrame
@@ -165,12 +175,21 @@ function Game() {
 
 		//calculating dinstance travelled between the last and current seconds
 		var distanceTravelled = SPEED * delta + (ACCELERATION * delta * delta ) / 2;
+
+		var w = WIDTH / 2;
+		var kx = Util.clamp((w - mousePosition.x) / w, -0.7, 0.7);
+
+		var h = HEIGHT / 2;
+		var ky = Util.clamp((h - mousePosition.y) / h, -0.7, 0.7);
+
+		console.log('kx=', kx, ', ky=', ky);
+
 		for (var i = 0, len = rings.length; i < len; i++) {
 			//the rings should calculate their new position on the z axis and if necessary do collision checks + destroy + spawn
-			rings[i].act(distanceTravelled, delta);
+			rings[i].act(distanceTravelled, delta, kx, ky);
 		}
 
-		tunnel.act();
+		tunnel.act(kx, ky);
 
 		//now that the rings have moved according to the elapsed time we can calculate the base speed for the next frame
 		SPEED += ACCELERATION * delta;
@@ -239,29 +258,33 @@ function Game() {
 			this.type.draw(context);
 		};
 
-		this.act = function(aDistanceTravelled, aDelta) {
+		this.act = function(aDistanceTravelled, aDelta, aKX, aKY) {
 			//if the ring is beyond the camera - destroy it
 			if (this.z < 0) {
 				rings.shift();
 				spawnRing(INITIAL_DISTANCE + this.z);
 			}
+
 			//calculate new z-position
 			this.z -= aDistanceTravelled;
 			this.radius = MAX_SIDE * penta((INITIAL_DISTANCE - Math.min(this.z, INITIAL_DISTANCE)) / INITIAL_DISTANCE);
 			this.angle += this.angleIncrement * aDelta;
+
 			if (this.angle >= 360) {
 				this.angle -= 360;
 			} else if (this.angle < 0) {
 				this.angle += 360;
 			}
+
 			this.type.radius = this.radius;
 			this.type.angle = this.angle;
+
+			this.type.center = center.translate(aKX * this.type.radius, aKY * this.type.radius);
 			this.type.rescale();
 		};
 	}
 
 	var lastTick = +Date.now();
-
 	function render() {
 		var now = +Date.now();
 
@@ -280,8 +303,8 @@ function Game() {
 	};
 
 	function mouseMoveListener(aEvent) {
-		center.x = WIDTH - aEvent.clientX;
-		center.y = HEIGHT - aEvent.clientY;
+		mousePosition.x = aEvent.clientX;
+		mousePosition.y = aEvent.clientY;
 	}
 
 	function init() {
