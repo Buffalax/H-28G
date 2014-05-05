@@ -188,7 +188,9 @@ function Game() {
 			//the rings should calculate their new position on the z axis and if necessary do collision checks + destroy + spawn
 			rings[i].act(distanceTravelled, delta, kx, ky);
 		}
-
+		if (rings.length > 4) {
+			rings = rings.slice(rings.length - 4, rings.length);
+		}
 		tunnel.act(kx, ky);
 
 		//now that the rings have moved according to the elapsed time we can calculate the base speed for the next frame
@@ -259,9 +261,8 @@ function Game() {
 		};
 
 		this.act = function(aDistanceTravelled, aDelta, aKX, aKY) {
-			//if the ring is beyond the camera - destroy it
+			//if the ring is beyond the camera - create a new ring to replace this one
 			if (this.z < 0) {
-				rings.shift();
 				spawnRing(INITIAL_DISTANCE + this.z);
 			}
 
