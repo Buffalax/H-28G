@@ -147,6 +147,8 @@ function Game() {
 
 	var RING_MAX_ROTATION = 60;
 
+	var FIELD_OF_VIEW_CONSTANT = 400;
+
 	var INITIAL_SPEED = 60;
 	var SPEED = INITIAL_SPEED;
 
@@ -221,6 +223,9 @@ function Game() {
 
 	function Ring(aZ) {
 		// the z field holds the distance between the object and the camera (camera is at 0)
+
+		var ACUTAL_RADIUS = 20;
+
 		this.z = aZ;
 		this.radius = RING_INITIAL_RADIUS;
 		this.center = center;
@@ -266,7 +271,7 @@ function Game() {
 
 			//calculate new z-position
 			this.z -= aDistanceTravelled;
-			this.radius = MAX_SIDE * penta((INITIAL_DISTANCE - Math.min(this.z, INITIAL_DISTANCE)) / INITIAL_DISTANCE);
+			this.radius = FIELD_OF_VIEW_CONSTANT * ( ACUTAL_RADIUS / Math.max(this.z, 1));
 			this.angle += this.angleIncrement * aDelta;
 
 			if (this.angle >= 360) {
@@ -284,6 +289,7 @@ function Game() {
 	}
 
 	var lastTick = +Date.now();
+
 	function render() {
 		var now = +Date.now();
 
