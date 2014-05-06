@@ -144,6 +144,8 @@ function Game() {
 	var HEIGHT = canvas.height;
 	var center = new Point(WIDTH / 2, HEIGHT / 2);
 	var mousePosition = center.translate();
+	var MOUSE_CLAMP = 0.8;
+	var MOUSE_RADIUS = (Math.min(WIDTH, HEIGHT) / 2)*MOUSE_CLAMP;
 	var tunnel = new Tunnel(context, center);
 	var MAX_SIDE = Math.max(center.x, center.y);
 
@@ -152,6 +154,13 @@ function Game() {
 	var RING_MAX_ROTATION = 60;
 
 	var FIELD_OF_VIEW_CONSTANT = 400;
+
+	var MAP_SCALE = 0.2;
+	var MAP_POS = new Point(10, 390);
+	var MAP_SIZE = new Point(WIDTH * MAP_SCALE, HEIGHT * MAP_SCALE);
+	var MAP_CENTER = new Point(MAP_POS.x + MAP_SIZE.x / 2, MAP_POS.y + MAP_SIZE.y / 2);
+	var MAP_RADIUS_INNER = MOUSE_RADIUS * MAP_SCALE;
+	var MAP_RADIUS_OUTER = (Math.min(WIDTH, HEIGHT) / 2)*MAP_SCALE;
 
 	var INITIAL_SPEED = 60;
 	var SPEED = INITIAL_SPEED;
@@ -215,8 +224,34 @@ function Game() {
 			rings[i].draw();
 		}
 
+		drawMap();
 		drawDebugData();
 		fpsCounter.draw();
+	}
+
+	function drawMap() {
+		context.strokeStyle = 'red';
+		context.lineWidth = 1;
+		context.beginPath();
+		context.rect(MAP_POS.x, MAP_POS.y, MAP_SIZE.x, MAP_SIZE.y);
+		context.closePath();
+		context.stroke();
+		context.beginPath();
+		context.arc(MAP_CENTER.x, MAP_CENTER.y, MAP_RADIUS_OUTER, 0, Util.PI2);
+		context.closePath();
+		context.stroke();
+		context.lineWidth = 3;
+		context.strokeStyle = "rgba(255,0,0,0.4)";
+		context.beginPath();
+		context.arc(MAP_CENTER.x, MAP_CENTER.y, MAP_RADIUS_INNER, 0, Util.PI2);
+		context.closePath();
+		context.stroke();
+		context.strokeStyle = 'red';
+		context.lineWidth = 1;
+		context.beginPath();
+		context.arc(MAP_POS.x + mousePosition.x * MAP_SCALE, MAP_POS.y + mousePosition.y * MAP_SCALE, 3, 0, Util.PI2);
+		context.closePath();
+		context.stroke();
 	}
 
 	function drawDebugData() {
@@ -332,17 +367,14 @@ function Game() {
 	}
 
 	function correctMousePosition() {
-		var clamp = 50;
-		var radius = Math.min(WIDTH, HEIGHT) / 2 - clamp;
 		var halfWidth = WIDTH / 2;
 		var halfHeight = HEIGHT / 2;
 		var xside = Math.abs(mousePosition.x - halfWidth), yside = Math.abs(mousePosition.y - halfHeight);
 		//if the position is outside the circle
-		if (xside * xside + yside * yside > radius * radius) {
+		if (xside * xside + yside * yside > MOUSE_RADIUS * MOUSE_RADIUS) {
 			var centerAngle = Math.atan(yside / xside);
-			console.log("centerAngle: " + centerAngle);
-			mousePosition.x = halfWidth + Math.cos(centerAngle) * radius * Util.sign(mousePosition.x - halfWidth);
-			mousePosition.y = halfHeight + Math.sin(centerAngle) * radius * Util.sign(mousePosition.y - halfHeight);
+			mousePosition.x = halfWidth + Math.cos(centerAngle) * MOUSE_RADIUS * Util.sign(mousePosition.x - halfWidth);
+			mousePosition.y = halfHeight + Math.sin(centerAngle) * MOUSE_RADIUS * Util.sign(mousePosition.y - halfHeight);
 		}
 	}
 
