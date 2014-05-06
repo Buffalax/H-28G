@@ -162,11 +162,11 @@ function Game() {
 	var MAP_RADIUS_INNER = MOUSE_RADIUS * MAP_SCALE;
 	var MAP_RADIUS_OUTER = (Math.min(WIDTH, HEIGHT) / 2) * MAP_SCALE;
 
-	var INITIAL_SPEED = 60;
+	var INITIAL_SPEED = 100;
 	var SPEED = INITIAL_SPEED;
 
 	var INITIAL_DISTANCE = 1000;
-	var ACCELERATION = 5;
+	var ACCELERATION = 0.5;
 
 	var ticker = (function() {
 		return window.requestAnimationFrame
