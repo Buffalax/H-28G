@@ -145,7 +145,7 @@ function Game() {
 	var center = new Point(WIDTH / 2, HEIGHT / 2);
 	var mousePosition = center.translate();
 	var MOUSE_CLAMP = 0.8;
-	var MOUSE_RADIUS = (Math.min(WIDTH, HEIGHT) / 2)*MOUSE_CLAMP;
+	var MOUSE_RADIUS = (Math.min(WIDTH, HEIGHT) / 2) * MOUSE_CLAMP;
 	var tunnel = new Tunnel(context, center);
 	var MAX_SIDE = Math.max(center.x, center.y);
 
@@ -160,7 +160,7 @@ function Game() {
 	var MAP_SIZE = new Point(WIDTH * MAP_SCALE, HEIGHT * MAP_SCALE);
 	var MAP_CENTER = new Point(MAP_POS.x + MAP_SIZE.x / 2, MAP_POS.y + MAP_SIZE.y / 2);
 	var MAP_RADIUS_INNER = MOUSE_RADIUS * MAP_SCALE;
-	var MAP_RADIUS_OUTER = (Math.min(WIDTH, HEIGHT) / 2)*MAP_SCALE;
+	var MAP_RADIUS_OUTER = (Math.min(WIDTH, HEIGHT) / 2) * MAP_SCALE;
 
 	var INITIAL_SPEED = 60;
 	var SPEED = INITIAL_SPEED;
@@ -300,7 +300,7 @@ function Game() {
 		}
 
 		this.draw = function() {
-			this.type.draw(context);
+			this.type.draw(context, (this.z > 200 ? (((INITIAL_DISTANCE - 200) - (this.z - 200)) / (INITIAL_DISTANCE - 200)) : 1));
 		};
 
 		this.act = function(aDistanceTravelled, aDelta, aKX, aKY) {

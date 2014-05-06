@@ -2,6 +2,10 @@ var RING_MAX_LINE_WIDTH = 20;
 var canvas = document.getElementById("canvas");
 var MAX_SIDE = Math.max(canvas.width, canvas.height);
 
+function intensity255(aColor255, aIntensity) {
+	return Math.round(aColor255 + (255 - aColor255) * (1 - aIntensity));
+};
+
 function EmptyRing(aRadius, aCenter, aAngle) {
 	this.radius = aRadius;
 	this.center = aCenter;
@@ -51,9 +55,10 @@ function EmptyRing(aRadius, aCenter, aAngle) {
 	this.collisionCheck = function() {
 
 	};
-	this.draw = function(aContext) {
+	this.draw = function(aContext, aIntensity) {
 		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		aContext.strokeStyle = '#000000';
+		var black = intensity255(0, aIntensity);
+		aContext.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
 
 		aContext.beginPath();
 		aContext.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
@@ -100,10 +105,12 @@ function RectangleRingSingle(aRadius, aCenter, aAngle) {
 	this.collisionCheck = function() {
 
 	};
-	this.draw = function(aContext) {
+	this.draw = function(aContext, aIntensity) {
 		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		aContext.strokeStyle = '#000000';
-		aContext.fillStyle = '#CCCCCC';
+		var black = intensity255(0, aIntensity);
+		var grey = intensity255(204, aIntensity);
+		aContext.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		aContext.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
 
 		aContext.beginPath();
 		aContext.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
@@ -177,10 +184,12 @@ function DoorLockRing(aRadius, aCenter, aAngle) {
 	this.collisionCheck = function() {
 
 	};
-	this.draw = function(aContext) {
+	this.draw = function(aContext, aIntensity) {
 		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		aContext.strokeStyle = '#000000';
-		aContext.fillStyle = '#CCCCCC';
+		var black = intensity255(0, aIntensity);
+		var grey = intensity255(204, aIntensity);
+		aContext.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		aContext.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
 
 		var currentAngle = this.angle * (Math.PI / 180);
 		aContext.beginPath();
@@ -243,10 +252,12 @@ function FanRing(aRadius, aCenter, aAngle) {
 	this.collisionCheck = function() {
 
 	};
-	this.draw = function(aContext) {
+	this.draw = function(aContext, aIntensity) {
 		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		aContext.strokeStyle = '#000000';
-		aContext.fillStyle = '#CCCCCC';
+		var black = intensity255(0, aIntensity);
+		var grey = intensity255(204, aIntensity);
+		aContext.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		aContext.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
 
 		var currentAngle = this.angle * (Math.PI / 180);
 
@@ -292,10 +303,12 @@ function HalfRing(aRadius, aCenter, aAngle) {
 	this.collisionCheck = function() {
 
 	};
-	this.draw = function(aContext) {
+	this.draw = function(aContext, aIntensity) {
 		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		aContext.strokeStyle = '#000000';
-		aContext.fillStyle = '#CCCCCC';
+		var black = intensity255(0, aIntensity);
+		var grey = intensity255(204, aIntensity);
+		aContext.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		aContext.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
 
 		var currentAngle = this.angle * (Math.PI / 180);
 
@@ -352,10 +365,12 @@ function HoleRing(aRadius, aCenter, aAngle, aHoles, aHoleRadiusRatio, aDistanceF
 	this.collisionCheck = function() {
 
 	};
-	this.draw = function(aContext) {
+	this.draw = function(aContext, aIntensity) {
 		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		aContext.strokeStyle = '#000000';
-		aContext.fillStyle = '#CCCCCC';
+		var black = intensity255(0, aIntensity);
+		var grey = intensity255(204, aIntensity);
+		aContext.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		aContext.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
 
 		aContext.beginPath();
 		aContext.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2, false);
