@@ -308,10 +308,21 @@ function Game() {
 		render();
 	};
 
-	function mouseMoveListener(aEvent) {
-		mousePosition.x = aEvent.clientX;
-		mousePosition.y = aEvent.clientY;
-		//correctMousePosition();
+	function mouseMoveListener(event) {
+		var mouseX;
+		var mouseY;
+		if (event.pageX || event.pageY) {
+			mouseX = event.pageX;
+			mouseY = event.pageY;
+		} else {
+			mouseX = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+			mouseY = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+		}
+		mouseX -= canvas.offsetLeft;
+		mouseY -= canvas.offsetTop;
+
+		mousePosition.x = mouseX;
+		mousePosition.y = mouseY;
 	}
 
 	function correctMousePosition() {
