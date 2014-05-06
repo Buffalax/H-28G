@@ -43,6 +43,10 @@ var Util = (function() {
 
 		clamp: function(aX, aMin, aMax) {
 			return Math.min(aMax, Math.max(aMin, aX));
+		},
+
+		sign: function(x) {
+			return (0 < x) - (x < 0);
 		}
 	};
 })();
@@ -89,8 +93,8 @@ function Tunnel(aContext, aCenter) {
 	var rayAngle = 2 * Math.PI / rays;
 
 	var center = new Point(aContext.canvas.width / 2, aContext.canvas.height / 2);
-	var outerRadius = Math.max(aContext.canvas.height, aContext.canvas.width);
-	var innerRadius = outerRadius / 20;
+	var outerRadius = Math.max(aContext.canvas.height, aContext.canvas.width) * 2;
+	var innerRadius = outerRadius / 50;
 
 	this.act = function(aKX, aKY) {
 		kx = aKX;
@@ -140,6 +144,8 @@ function Game() {
 	var HEIGHT = canvas.height;
 	var center = new Point(WIDTH / 2, HEIGHT / 2);
 	var mousePosition = center.translate();
+	var MOUSE_CLAMP = 0.8;
+	var MOUSE_RADIUS = (Math.min(WIDTH, HEIGHT) / 2)*MOUSE_CLAMP;
 	var tunnel = new Tunnel(context, center);
 	var MAX_SIDE = Math.max(center.x, center.y);
 
@@ -148,6 +154,13 @@ function Game() {
 	var RING_MAX_ROTATION = 60;
 
 	var FIELD_OF_VIEW_CONSTANT = 400;
+
+	var MAP_SCALE = 0.2;
+	var MAP_POS = new Point(10, 390);
+	var MAP_SIZE = new Point(WIDTH * MAP_SCALE, HEIGHT * MAP_SCALE);
+	var MAP_CENTER = new Point(MAP_POS.x + MAP_SIZE.x / 2, MAP_POS.y + MAP_SIZE.y / 2);
+	var MAP_RADIUS_INNER = MOUSE_RADIUS * MAP_SCALE;
+	var MAP_RADIUS_OUTER = (Math.min(WIDTH, HEIGHT) / 2)*MAP_SCALE;
 
 	var INITIAL_SPEED = 60;
 	var SPEED = INITIAL_SPEED;
@@ -211,14 +224,41 @@ function Game() {
 			rings[i].draw();
 		}
 
-		drawSpeed();
+		drawMap();
+		drawDebugData();
 		fpsCounter.draw();
 	}
 
-	function drawSpeed() {
+	function drawMap() {
+		context.strokeStyle = 'red';
+		context.lineWidth = 1;
+		context.beginPath();
+		context.rect(MAP_POS.x, MAP_POS.y, MAP_SIZE.x, MAP_SIZE.y);
+		context.closePath();
+		context.stroke();
+		context.beginPath();
+		context.arc(MAP_CENTER.x, MAP_CENTER.y, MAP_RADIUS_OUTER, 0, Util.PI2);
+		context.closePath();
+		context.stroke();
+		context.lineWidth = 3;
+		context.strokeStyle = "rgba(255,0,0,0.4)";
+		context.beginPath();
+		context.arc(MAP_CENTER.x, MAP_CENTER.y, MAP_RADIUS_INNER, 0, Util.PI2);
+		context.closePath();
+		context.stroke();
+		context.strokeStyle = 'red';
+		context.lineWidth = 1;
+		context.beginPath();
+		context.arc(MAP_POS.x + mousePosition.x * MAP_SCALE, MAP_POS.y + mousePosition.y * MAP_SCALE, 3, 0, Util.PI2);
+		context.closePath();
+		context.stroke();
+	}
+
+	function drawDebugData() {
 		context.fillStyle = 'red';
 		context.font = '10px Verdana';
-		context.fillText('SPD: ' + SPEED.toFixed(3), WIDTH - 125, HEIGHT - 10);
+		context.fillText('X:' + mousePosition.x.toFixed(2) + ' Y: ' + mousePosition.y.toFixed(2), WIDTH - 125, HEIGHT - 20);
+		context.fillText('SPD: ' + SPEED.toFixed(3), WIDTH - 135, HEIGHT - 10);
 	}
 
 	function Ring(aZ) {
@@ -307,9 +347,35 @@ function Game() {
 		render();
 	};
 
-	function mouseMoveListener(aEvent) {
-		mousePosition.x = aEvent.clientX;
-		mousePosition.y = aEvent.clientY;
+	function mouseMoveListener(event) {
+		var mouseX;
+		var mouseY;
+		if (event.pageX || event.pageY) {
+			mouseX = event.pageX;
+			mouseY = event.pageY;
+		} else {
+			mouseX = event.clientX + document.body.scrollLeft + document.documentElement.scrollLeft;
+			mouseY = event.clientY + document.body.scrollTop + document.documentElement.scrollTop;
+		}
+		mouseX -= canvas.offsetLeft;
+		mouseY -= canvas.offsetTop;
+
+		mousePosition.x = mouseX;
+		mousePosition.y = mouseY;
+
+		correctMousePosition();
+	}
+
+	function correctMousePosition() {
+		var halfWidth = WIDTH / 2;
+		var halfHeight = HEIGHT / 2;
+		var xside = Math.abs(mousePosition.x - halfWidth), yside = Math.abs(mousePosition.y - halfHeight);
+		//if the position is outside the circle
+		if (xside * xside + yside * yside > MOUSE_RADIUS * MOUSE_RADIUS) {
+			var centerAngle = Math.atan(yside / xside);
+			mousePosition.x = halfWidth + Math.cos(centerAngle) * MOUSE_RADIUS * Util.sign(mousePosition.x - halfWidth);
+			mousePosition.y = halfHeight + Math.sin(centerAngle) * MOUSE_RADIUS * Util.sign(mousePosition.y - halfHeight);
+		}
 	}
 
 	function init() {
