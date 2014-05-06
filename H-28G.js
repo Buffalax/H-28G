@@ -43,6 +43,10 @@ var Util = (function() {
 
 		clamp: function(aX, aMin, aMax) {
 			return Math.min(aMax, Math.max(aMin, aX));
+		},
+
+		sign: function(x) {
+			return (0 < x) - (x < 0);
 		}
 	};
 })();
@@ -211,15 +215,15 @@ function Game() {
 			rings[i].draw();
 		}
 
-		drawSpeed();
+		drawDebugData();
 		fpsCounter.draw();
 	}
 
-	function drawSpeed() {
+	function drawDebugData() {
 		context.fillStyle = 'red';
 		context.font = '10px Verdana';
-		context.fillText('X:'+mousePosition.x.toFixed(2)+' Y: '+mousePosition.y.toFixed(2), WIDTH - 125, HEIGHT - 20);
-		context.fillText('SPD: ' + SPEED.toFixed(3), WIDTH - 125, HEIGHT - 10);
+		context.fillText('X:' + mousePosition.x.toFixed(2) + ' Y: ' + mousePosition.y.toFixed(2), WIDTH - 125, HEIGHT - 20);
+		context.fillText('SPD: ' + SPEED.toFixed(3), WIDTH - 135, HEIGHT - 10);
 	}
 
 	function Ring(aZ) {
@@ -323,84 +327,22 @@ function Game() {
 
 		mousePosition.x = mouseX;
 		mousePosition.y = mouseY;
+
+		correctMousePosition();
 	}
 
 	function correctMousePosition() {
-		var radius = Math.min(WIDTH, HEIGHT) / 2;
+		var clamp = 50;
+		var radius = Math.min(WIDTH, HEIGHT) / 2 - clamp;
 		var halfWidth = WIDTH / 2;
 		var halfHeight = HEIGHT / 2;
-		var wx, wy;
-		var xapply, yapply;
-		//first we insure that the mouse position is clamped in the square area around the circumference of the actual area of valid positions.
-		if (WIDTH > HEIGHT) {
-			//if the mouse position is in the left side
-			if (mousePosition.x < halfWidth) {
-				//if the position is outside of the square - to the left
-				if (mousePosition.x < (halfWidth - radius)) {
-					//set to farthest possible point
-					mousePosition.x = halfWidth - radius;
-					//if the mouse position is in the right side
-				}
-			} else {
-				//if the position is outside of the square - to the right
-				if (mousePosition.x > (halfWidth + radius)) {
-					//set to farthest possible point
-					mousePosition.x = halfWidth + radius;
-				}
-			}
-		}
-		else if (HEIGHT > WIDTH) {
-			//if the mouse position is in the top side
-			if (mousePosition.y < halfHeight) {
-				//if the position is outside of the square - to the top
-				if (mousePosition.y < (halfHeight - radius)) {
-					//set to farthest possible point
-					mousePosition.y = halfHeight - radius;
-					//if the mouse position is in the bottom side
-				} else {
-					//if the position is outside of the square - to the right
-					if (mousePosition.y > (halfHeight + radius)) {
-						//set to farthest possible point
-						mousePosition.y = halfHeight + radius;
-					}
-				}
-			}
-		}
-		//if the position is in the left side
-		if (mousePosition.x < halfWidth) {
-			wx = halfWidth - mousePosition.x;
-			//apply the new x point by subtracting from halfWidth
-			xapply = -1;
-			//if the position is in the bottom side
-		} else {
-			wx = mousePosition.x - halfWidth;
-			//apply the new x point by adding to halfWidth
-			xapply = 1;
-		}
-		//if the position is in the top side
-		if (mousePosition.y < halfHeight) {
-			wy = halfHeight - mousePosition.y;
-			//apply the new y point by subtracting from halfHeight
-			yapply = -1;
-		} else {
-			wy = mousePosition.y - halfHeight;
-			//apply the new y point by adding to halfHeight
-			yapply = 1;
-		}
-
-		var wsqx = wx * wx, wsqy = wy * wy, rsq = radius * radius;
-		//if this point is outside of the circle
-		if (wsqx + wsqy > rsq) {
-			var newWx = Math.sqrt(rsq - wsqy);
-			var newWy = Math.sqrt(rsq - wsqx);
-			//if the x difference is smaller than the y difference...
-			if ((wx - newWx) < (wy - newWy)) {
-				//...we should apply the x difference for better accuracy
-				mousePosition.x = halfWidth + newWx * xapply;
-			} else {
-				//...we should apply the y difference for better accuracy
-				mousePosition.y = halfHeight + newWy * yapply;
-			}
+		var xside = Math.abs(mousePosition.x - halfWidth), yside = Math.abs(mousePosition.y - halfHeight);
+		//if the position is outside the circle
+		if (xside * xside + yside * yside > radius * radius) {
+			var centerAngle = Math.atan(yside / xside);
+			console.log("centerAngle: " + centerAngle);
+			mousePosition.x = halfWidth + Math.cos(centerAngle) * radius * Util.sign(mousePosition.x - halfWidth);
+			mousePosition.y = halfHeight + Math.sin(centerAngle) * radius * Util.sign(mousePosition.y - halfHeight);
 		}
 	}
 
