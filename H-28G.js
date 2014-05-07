@@ -13,7 +13,7 @@ var Util = (function() {
 			return function() {
 				if (!started) {
 					started = true;
-					aFunction.apply(this, arguments);
+					return aFunction.apply(this, arguments);
 				}
 			};
 		},
@@ -134,10 +134,69 @@ function Tunnel(aContext, aCenter) {
 	};
 }
 
+function Engine() {
+	var self = this;
+
+	function updateCanvas(aCanvas) {
+		aCanvas.width = self.view.width;
+		aCanvas.height = self.view.height;
+	}
+
+	function resizeListener() {
+		self.view = {
+			width: window.innerWidth,
+			height: window.innerHeight
+		};
+
+		if (self.canvas) {
+			updateCanvas(self.canvas);
+		}
+	}
+
+	function createCanvas() {
+		var canvas = document.createElement('canvas');
+
+		updateCanvas(canvas);
+		var context = canvas.getContext && canvas.getContext('2d');
+
+		canvas.innerHTML = 'This browser doesnt support HTML5';
+		document.body.appendChild(canvas);
+
+		if (!context) {
+			return false;
+		}
+
+		self.canvas = canvas;
+		self.context = context;
+	}
+
+	this.init = Util.singleRun(function() {
+		resizeListener();
+		window.addEventListener('resize', resizeListener, false);
+
+		return createCanvas();
+	});
+
+	this.destroy = function() {
+		if (!self) {
+			// already destroyed;
+			return;
+		}
+
+		window.removeEventListener('resize', resizeListener, false);
+		document.body.removeChild(self.canvas);
+
+		self = null;
+	};
+}
+
 function Game() {
+	var engine = new Engine();
+	engine.init();
+
 	var rings = [];
-	var canvas = document.getElementById("canvas");
-	var context = canvas.getContext('2d');
+	var canvas = engine.canvas;
+	var context = engine.context;
 	var fpsCounter = new FPSCounter(1000, context);
 
 	var WIDTH = canvas.width;
@@ -156,8 +215,8 @@ function Game() {
 	var FIELD_OF_VIEW_CONSTANT = 400;
 
 	var MAP_SCALE = 0.2;
-	var MAP_POS = new Point(10, 390);
 	var MAP_SIZE = new Point(WIDTH * MAP_SCALE, HEIGHT * MAP_SCALE);
+	var MAP_POS = new Point(10, HEIGHT - MAP_SIZE.y - 10);
 	var MAP_CENTER = new Point(MAP_POS.x + MAP_SIZE.x / 2, MAP_POS.y + MAP_SIZE.y / 2);
 	var MAP_RADIUS_INNER = MOUSE_RADIUS * MAP_SCALE;
 	var MAP_RADIUS_OUTER = (Math.min(WIDTH, HEIGHT) / 2)*MAP_SCALE;
@@ -257,6 +316,8 @@ function Game() {
 	function drawDebugData() {
 		context.fillStyle = 'red';
 		context.font = '10px Verdana';
+
+		context.fillText('W:' + window.innerWidth + ' H: ' + window.innerHeight, WIDTH - 125, HEIGHT - 30);
 		context.fillText('X:' + mousePosition.x.toFixed(2) + ' Y: ' + mousePosition.y.toFixed(2), WIDTH - 125, HEIGHT - 20);
 		context.fillText('SPD: ' + SPEED.toFixed(3), WIDTH - 135, HEIGHT - 10);
 	}

@@ -1,6 +1,5 @@
 var RING_MAX_LINE_WIDTH = 20;
-var canvas = document.getElementById("canvas");
-var MAX_SIDE = Math.max(canvas.width, canvas.height);
+var MAX_SIDE = 500;
 
 function EmptyRing(aRadius, aCenter, aAngle) {
 	this.radius = aRadius;
