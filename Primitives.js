@@ -3,6 +3,16 @@ function Vector2(aX, aY) {
 	this.y = aY;
 }
 
+Vector2.prototype = {
+	get width() {
+		return this.x;
+	},
+	
+	get height() {
+		return this.y;
+	}
+};
+
 Vector2.singularCirclePoint = function(aAngle) {
 	return new Vector2(Math.cos(aAngle), Math.sin(aAngle));
 };
@@ -33,6 +43,14 @@ Vector2.prototype.rotate = function(aAngle, aPoint) {
 		this.x = newX + aPoint.x;
 		this.y = newY + aPoint.y;
 	}
+};
+
+Vector2.prototype.minValue = function() {
+	return Math.min(this.x, this.y);
+};
+
+Vector2.prototype.maxValue = function() {
+	return Math.max(this.x, this.y);
 };
 
 var Point = Vector2;
