@@ -92,6 +92,7 @@ var Game = new (function() {
 			rings = rings.slice(rings.length - 4, rings.length);
 		}
 		tunnel.act(kx, ky);
+		map.act(kx, ky);
 
 		//now that the rings have moved according to the elapsed time we can calculate the base speed for the next frame
 		speed += ACCELERATION * delta;
@@ -103,7 +104,7 @@ var Game = new (function() {
 		clampRadius = center.minValue() * CLAMP_RATIO;
 
 		tunnel.resize(engine.dimensions);
-		map.resize(engine.dimensions);
+		map.resize(engine.dimensions, clampRadius);
 		// fpsCounter.resize(engine.dimensions);
 	}
 
