@@ -30,7 +30,7 @@ function Ring(aZ) {
 		}
 
 		//calculate new z-position
-		// this.z -= aDistanceTravelled;
+		this.z -= aDistanceTravelled;
 		this.radius = aEngine.FIELD_OF_VIEW * (ACUTAL_RADIUS / Math.max(this.z, 1));
 		this.angle += this.angleIncrement * aDelta;
 
