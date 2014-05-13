@@ -78,11 +78,10 @@ var Game = new (function() {
 		var distanceTravelled = speed * delta + (ACCELERATION * delta * delta ) / 2;
 
 		updateRocketPosition();
-		var w = engine.center.x;
-		var kx = Util.clamp((w - rocketPosition.x) / w, -0.7, 0.7);
 
-		var h = engine.center.y;
-		var ky = Util.clamp((h - rocketPosition.y) / h, -0.7, 0.7);
+		var deviation = engine.center.substract(rocketPosition);
+		var kx = deviation.x / clampRadius * 0.7;
+		var ky = deviation.y / clampRadius * 0.7;
 
 		for (var i = 0, len = rings.length; i < len; i++) {
 			//the rings should calculate their new position on the z axis and if necessary do collision checks + destroy + spawn
@@ -138,7 +137,7 @@ var Game = new (function() {
 		context.font = '10px Verdana';
 
 		context.fillText('W:' + window.innerWidth + ' H: ' + window.innerHeight, w - 125, h - 30);
-		context.fillText('X:' + (rocketPosition.x | 0) + ' Y: ' + (rocketPosition.y | 0), w - 125, h - 20);
+		context.fillText('X:' + rocketPosition.x + ' Y: ' + rocketPosition.y, w - 125, h - 20);
 		context.fillText('SPD: ' + speed.toFixed(3), w - 135, h - 10);
 	}
 
