@@ -70,6 +70,17 @@ var Game = new (function() {
 		}
 	}
 
+	function updateRocketPosition2() {
+		var dx = engine.mouse.x - engine.center.x;
+		var dy = engine.mouse.y - engine.center.y;
+
+		var radius = Math.sqrt(dx * dx + dy * dy);
+		var ratio = (radius > clampRadius) ? clampRadius / radius : 1;
+
+		rocketPosition.x = engine.center.x + (dx * ratio) | 0;
+		rocketPosition.y = engine.center.y + (dy * ratio) | 0;
+	}
+
 	function action(aDelta) {
 		//first convert the elapsed time from milliseconds to seconds
 		var delta = aDelta / 1000;
@@ -77,7 +88,7 @@ var Game = new (function() {
 		//calculating dinstance travelled between the last and current seconds
 		var distanceTravelled = speed * delta + (ACCELERATION * delta * delta ) / 2;
 
-		updateRocketPosition();
+		updateRocketPosition2();
 
 		var deviation = engine.center.substract(rocketPosition);
 		var kx = deviation.x / clampRadius * 0.7;
