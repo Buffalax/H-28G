@@ -53,6 +53,14 @@ Vector2.prototype.maxValue = function() {
 	return Math.max(this.x, this.y);
 };
 
+Vector2.prototype.length = function() {
+	return Math.sqrt(this.x * this.x + this.y * this.y);
+};
+
+Vector2.prototype.substract = function(aVector2) {
+	return new Vector2(this.x - aVector2.x, this.y - aVector2.y);
+};
+
 var Point = Vector2;
 
 // http://jsperf.com/js-getter-vs-prop
