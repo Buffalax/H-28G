@@ -117,7 +117,7 @@ var Game = new (function() {
 	function drawBgr() {
 		var context = engine.context;
 
-		context.rect(0, 0, engine.dimensions.width, engine.dimensions.width);
+		context.rect(0, 0, engine.dimensions.width, engine.dimensions.height);
 		context.fillStyle = '#FFFFFF';
 		context.fill();
 	}
