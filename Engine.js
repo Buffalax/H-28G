@@ -10,10 +10,10 @@ function Engine() {
 	var mouseMove;
 
 	/*
-	  self.canvas : CanvasElement
-	  self.context : Canvas2dContext
-	  self.dimensions : Vector2
-	  self.mouse : Vector2
+		self.canvas : CanvasElement
+		self.context : Canvas2dContext
+		self.dimensions : Vector2
+		self.mouse : Vector2
 	*/
 
 	var ticker = (function() {
@@ -123,4 +123,6 @@ function Engine() {
 		self = null;
 		loop = Util.noop;
 	};
+
+	this.fpsCounter = fpsCounter;
 }

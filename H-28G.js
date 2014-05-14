@@ -150,6 +150,7 @@ var Game = new (function() {
 		context.fillText('W:' + window.innerWidth + ' H: ' + window.innerHeight, w - 125, h - 30);
 		context.fillText('X:' + rocketPosition.x + ' Y: ' + rocketPosition.y, w - 125, h - 20);
 		context.fillText('SPD: ' + speed.toFixed(3), w - 135, h - 10);
+		context.fillText('FPS: ' + (engine.fpsCounter.fps || '...'), w - 50, h - 10);
 	}
 
 	function init() {
