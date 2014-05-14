@@ -90,12 +90,12 @@ var Game = new (function() {
 		var kx = deviation.x / clampRadius * 0.7;
 		var ky = deviation.y / clampRadius * 0.7;
 
-		for (var i = 0, len = rings.length; i < len; i++) {
+		for (var i = 0; i < rings.length; i++) {
 			//the rings should calculate their new position on the z axis and if necessary do collision checks + destroy + spawn
 			rings[i].act(engine, distanceTravelled, delta, kx, ky);
 		}
 		if (rings.length > 4) {
-			rings = rings.slice(rings.length - 4, rings.length);
+			rings = rings.slice(-4);
 		}
 		tunnel.act(kx, ky);
 		map.act(kx, ky);
