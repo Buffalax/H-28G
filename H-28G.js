@@ -1,10 +1,6 @@
 /*global window, document*/
 /*jshint laxbreak:true*/
 
-function penta(aX) {
-	return aX * aX * aX * aX * aX;
-}
-
 // FIX ME: hack to make ring.act work
 var Game = new (function() {
 	var CLAMP_RATIO = 0.8;
