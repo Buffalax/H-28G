@@ -44,6 +44,10 @@ var Util = (function() {
 
 		sign: function(x) {
 			return (0 < x) - (x < 0);
+		},
+
+		intensity255: function(aColor255, aIntensity) {
+			return Math.round(aColor255 + (255 - aColor255) * (1 - aIntensity));
 		}
 	};
 })();

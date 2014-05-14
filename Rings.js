@@ -1,13 +1,14 @@
 var RING_MAX_LINE_WIDTH = 20;
+var INITIAL_DISTANCE = 1000;
 var MAX_SIDE = 500;
 
 function Ring(aZ) {
 	var ACUTAL_RADIUS = 20;
 	var RING_MAX_ROTATION = 60;
-	var INITIAL_DISTANCE = 1000;
 	var RING_INITIAL_RADIUS = 10;
 
 	/*
+		this.intensity: number
 		this.center : Vector2
 		this.draw : function [abstract]
 		this.rescale : function [abstract]
@@ -41,9 +42,19 @@ function Ring(aZ) {
 		}
 
 		this.center = aEngine.center.translate(aKX * this.radius, aKY * this.radius);
+		this.updateIntensity();
 		this.rescale();
 	};
 }
+
+Ring.prototype.updateIntensity = function() {
+	if (this.z <= 200) {
+		this.intensity = 1;
+	} else {
+		var d = INITIAL_DISTANCE - 200;
+		this.intensity = (d - this.z + 200) / d;
+	}
+};
 
 function EmptyRing(aZ) {
 	Ring.call(this, aZ);
@@ -95,8 +106,9 @@ function EmptyRing(aZ) {
 	this.draw = function(aEngine) {
 		var context = aEngine.context;
 
+		var black = Util.intensity255(0, this.intensity);
+		context.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
 		context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		context.strokeStyle = '#000000';
 
 		context.beginPath();
 		context.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
@@ -135,19 +147,21 @@ function RectangleRingSingle(aZ) {
 	this.rotate = function() {
 		this.rectangle.rotate(this.angle, this.center);
 	};
-	this.translate = function() {
 
+	this.translate = function() {
 	};
 
 	this.collisionCheck = function() {
-
 	};
+
 	this.draw = function(aEngine) {
 		var context = aEngine.context;
 
+		var black = Util.intensity255(0, this.intensity);
+		var grey = Util.intensity255(204, this.intensity);
+		context.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		context.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
 		context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		context.strokeStyle = '#000000';
-		context.fillStyle = '#CCCCCC';
 
 		context.beginPath();
 		context.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
@@ -223,9 +237,11 @@ function DoorLockRing(aZ) {
 	this.draw = function(aEngine) {
 		var context = aEngine.context;
 
+		var black = Util.intensity255(0, this.intensity);
+		var grey = Util.intensity255(204, this.intensity);
+		context.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		context.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
 		context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		context.strokeStyle = '#000000';
-		context.fillStyle = '#CCCCCC';
 
 		var currentAngle = this.angle * (Math.PI / 180);
 		context.beginPath();
@@ -291,9 +307,11 @@ function FanRing(aZ) {
 	this.draw = function(aEngine) {
 		var context = aEngine.context;
 
+		var black = Util.intensity255(0, this.intensity);
+		var grey = Util.intensity255(204, this.intensity);
+		context.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		context.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
 		context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		context.strokeStyle = '#000000';
-		context.fillStyle = '#CCCCCC';
 
 		var currentAngle = this.angle * (Math.PI / 180);
 
@@ -337,9 +355,11 @@ function HalfRing(aZ) {
 	this.draw = function(aEngine) {
 		var context = aEngine.context;
 
+		var black = Util.intensity255(0, this.intensity);
+		var grey = Util.intensity255(204, this.intensity);
+		context.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		context.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
 		context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		context.strokeStyle = '#000000';
-		context.fillStyle = '#CCCCCC';
 
 		var currentAngle = this.angle * (Math.PI / 180);
 
@@ -396,9 +416,11 @@ function HoleRing(aZ, aHoles, aHoleRadiusRatio, aDistanceFormCenterRatio) {
 	this.draw = function(aEngine) {
 		var context = aEngine.context;
 
+		var black = Util.intensity255(0, this.intensity);
+		var grey = Util.intensity255(204, this.intensity);
+		context.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		context.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
 		context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		context.strokeStyle = '#000000';
-		context.fillStyle = '#CCCCCC';
 
 		context.beginPath();
 		context.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2, false);

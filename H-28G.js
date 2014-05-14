@@ -5,8 +5,8 @@
 var Game = new (function() {
 	var CLAMP_RATIO = 0.8;
 
-	var ACCELERATION = 5;
-	var INITIAL_SPEED = 60;
+	var ACCELERATION = 0.5;
+	var INITIAL_SPEED = 100;
 
 	var rings = [];
 
@@ -25,13 +25,13 @@ var Game = new (function() {
 		/* 3 */ RectangleRingSingle,
 		/* 4 */ HalfRing,
 		/* 5 */ function(aDistance) {
-					return HoleRing.call(this, aDistance, 3, 0.3, 0.6);
+					return new HoleRing(aDistance, 3, 0.3, 0.6);
 				},
 		/* 6 */ function(aDistance) {
-					return HoleRing.call(this, aDistance, 2, 0.35, 0.55);
+					return new HoleRing(aDistance, 2, 0.35, 0.55);
 				},
 		/* 7 */ function(aDistance) {
-					return HoleRing.call(this, aDistance, 1, 0.4, 0.5);
+					return new HoleRing(aDistance, 1, 0.4, 0.5);
 				}
 	];
 
