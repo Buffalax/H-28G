@@ -1,11 +1,63 @@
 var RING_MAX_LINE_WIDTH = 20;
-var canvas = document.getElementById("canvas");
-var MAX_SIDE = Math.max(canvas.width, canvas.height);
+var INITIAL_DISTANCE = 1000;
+var MAX_SIDE = 500;
 
-function EmptyRing(aRadius, aCenter, aAngle) {
-	this.radius = aRadius;
-	this.center = aCenter;
-	this.angle = aAngle;
+function Ring(aZ) {
+	var ACUTAL_RADIUS = 20;
+	var RING_MAX_ROTATION = 60;
+	var RING_INITIAL_RADIUS = 10;
+
+	/*
+		this.intensity: number
+		this.center : Vector2
+		this.draw : function [abstract]
+		this.rescale : function [abstract]
+	*/
+
+	this.z = aZ;
+	this.radius = RING_INITIAL_RADIUS;
+	this.angle = Math.random() * 360;
+	this.angleIncrement = Math.random() * RING_MAX_ROTATION * (-1 + Math.round(Math.random()) * 2);
+
+	this.resize = function(aDimensions) {
+		this.center = aDimensions.multiply(0.5);
+		this.rescale();
+	};
+
+	this.act = function(aEngine, aDistanceTravelled, aDelta, aKX, aKY) {
+		//if the ring is beyond the camera - create a new ring to replace this one
+		if (this.z < 0) {
+			Game.spawnRing(INITIAL_DISTANCE + this.z);
+		}
+
+		//calculate new z-position
+		this.z -= aDistanceTravelled;
+		this.radius = aEngine.FIELD_OF_VIEW * (ACUTAL_RADIUS / Math.max(this.z, 1));
+		this.angle += this.angleIncrement * aDelta;
+
+		if (this.angle >= 360) {
+			this.angle -= 360;
+		} else if (this.angle < 0) {
+			this.angle += 360;
+		}
+
+		this.center = aEngine.center.translate(aKX * this.radius, aKY * this.radius);
+		this.updateIntensity();
+		this.rescale();
+	};
+}
+
+Ring.prototype.updateIntensity = function() {
+	if (this.z <= 200) {
+		this.intensity = 1;
+	} else {
+		var d = INITIAL_DISTANCE - 200;
+		this.intensity = (d - this.z + 200) / d;
+	}
+};
+
+function EmptyRing(aZ) {
+	Ring.call(this, aZ);
 
 	this.DECORATION_HEIGHT = 0.2;
 
@@ -44,36 +96,38 @@ function EmptyRing(aRadius, aCenter, aAngle) {
 		this.lineRight.rotate(this.angle, this.center);
 
 	};
-	this.translate = function() {
 
+	this.translate = function() {
 	};
 
 	this.collisionCheck = function() {
-
-	};
-	this.draw = function(aContext) {
-		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		aContext.strokeStyle = '#000000';
-
-		aContext.beginPath();
-		aContext.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
-
-		this.lineTop.draw(aContext);
-		this.lineBottom.draw(aContext);
-		this.lineLeft.draw(aContext);
-		this.lineRight.draw(aContext);
-
-		aContext.closePath();
-		aContext.stroke();
 	};
 
-	this.rescale();
+	this.draw = function(aEngine) {
+		var context = aEngine.context;
+
+		var black = Util.intensity255(0, this.intensity);
+		context.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
+
+		context.beginPath();
+		context.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
+
+		this.lineTop.draw(context);
+		this.lineBottom.draw(context);
+		this.lineLeft.draw(context);
+		this.lineRight.draw(context);
+
+		context.closePath();
+		context.stroke();
+	};
 }
 
-function RectangleRingSingle(aRadius, aCenter, aAngle) {
-	this.radius = aRadius;
-	this.center = aCenter;
-	this.angle = aAngle;
+EmptyRing.prototype = Object.create(Ring.prototype);
+EmptyRing.prototype.constructor = EmptyRing;
+
+function RectangleRingSingle(aZ) {
+	Ring.call(this, aZ);
 
 	this.RECTANGLE_WIDTH = 0.8;
 	this.RECTANGLE_HEIGHT = 1.6;
@@ -93,34 +147,37 @@ function RectangleRingSingle(aRadius, aCenter, aAngle) {
 	this.rotate = function() {
 		this.rectangle.rotate(this.angle, this.center);
 	};
-	this.translate = function() {
 
+	this.translate = function() {
 	};
 
 	this.collisionCheck = function() {
-
-	};
-	this.draw = function(aContext) {
-		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		aContext.strokeStyle = '#000000';
-		aContext.fillStyle = '#CCCCCC';
-
-		aContext.beginPath();
-		aContext.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
-		this.rectangle.draw(aContext);
-		aContext.closePath();
-
-		aContext.fill();
-		aContext.stroke();
 	};
 
-	this.rescale();
+	this.draw = function(aEngine) {
+		var context = aEngine.context;
+
+		var black = Util.intensity255(0, this.intensity);
+		var grey = Util.intensity255(204, this.intensity);
+		context.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		context.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
+		context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
+
+		context.beginPath();
+		context.arc(this.center.x, this.center.y, this.radius, 0, 2 * Math.PI, false);
+		this.rectangle.draw(context);
+		context.closePath();
+
+		context.fill();
+		context.stroke();
+	};
 }
 
-function DoorLockRing(aRadius, aCenter, aAngle) {
-	this.radius = aRadius;
-	this.center = aCenter;
-	this.angle = aAngle;
+RectangleRingSingle.prototype = Object.create(Ring.prototype);
+RectangleRingSingle.prototype.constructor = RectangleRingSingle;
+
+function DoorLockRing(aZ) {
+	Ring.call(this, aZ);
 
 	this.CIRCLE_RADIUS = 0.3;
 	this.ANGLE = 60;
@@ -170,38 +227,42 @@ function DoorLockRing(aRadius, aCenter, aAngle) {
 		bottomPointLeft.rotate(this.angle, this.center);
 		topPointRight.rotate(this.angle, this.center);
 	};
-	this.translate = function() {
 
+	this.translate = function() {
 	};
 
 	this.collisionCheck = function() {
-
 	};
-	this.draw = function(aContext) {
-		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		aContext.strokeStyle = '#000000';
-		aContext.fillStyle = '#CCCCCC';
+
+	this.draw = function(aEngine) {
+		var context = aEngine.context;
+
+		var black = Util.intensity255(0, this.intensity);
+		var grey = Util.intensity255(204, this.intensity);
+		context.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		context.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
+		context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
 
 		var currentAngle = this.angle * (Math.PI / 180);
-		aContext.beginPath();
-		aContext.moveTo(midPointLeft.x, midPointLeft.y);
-		aContext.lineTo(bottomPointLeft.x, bottomPointLeft.y);
-		aContext.arc(this.center.x, this.center.y, this.radius, radStartAngle + currentAngle, radEndAngle + currentAngle, false);
-		aContext.lineTo(topPointRight.x, topPointRight.y);
-		aContext.arc(this.center.x, this.center.y, circleRadius, radEndAngle + currentAngle, radStartAngle + currentAngle, true);
-		aContext.lineTo(midPointLeft.x, midPointLeft.y);
-		aContext.closePath();
+		context.beginPath();
+		context.moveTo(midPointLeft.x, midPointLeft.y);
+		context.lineTo(bottomPointLeft.x, bottomPointLeft.y);
+		context.arc(this.center.x, this.center.y, this.radius, radStartAngle + currentAngle, radEndAngle + currentAngle, false);
+		context.lineTo(topPointRight.x, topPointRight.y);
+		context.arc(this.center.x, this.center.y, circleRadius, radEndAngle + currentAngle, radStartAngle + currentAngle, true);
+		context.lineTo(midPointLeft.x, midPointLeft.y);
+		context.closePath();
 
-		aContext.fill();
-		aContext.stroke();
+		context.fill();
+		context.stroke();
 	};
-	this.rescale();
 }
 
-function FanRing(aRadius, aCenter, aAngle) {
-	this.radius = aRadius;
-	this.center = aCenter;
-	this.angle = aAngle;
+DoorLockRing.prototype = Object.create(Ring.prototype);
+DoorLockRing.prototype.constructor = DoorLockRing;
+
+function FanRing(aZ) {
+	Ring.call(this, aZ);
 
 	this.CIRCLE_RADIUS = 0.3;
 
@@ -236,84 +297,87 @@ function FanRing(aRadius, aCenter, aAngle) {
 		bottomHighPoint.rotate(this.angle, this.center);
 		leftLowPoint.rotate(this.angle, this.center);
 	};
-	this.translate = function() {
 
+	this.translate = function() {
 	};
 
 	this.collisionCheck = function() {
-
 	};
-	this.draw = function(aContext) {
-		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		aContext.strokeStyle = '#000000';
-		aContext.fillStyle = '#CCCCCC';
+
+	this.draw = function(aEngine) {
+		var context = aEngine.context;
+
+		var black = Util.intensity255(0, this.intensity);
+		var grey = Util.intensity255(204, this.intensity);
+		context.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		context.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
+		context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
 
 		var currentAngle = this.angle * (Math.PI / 180);
 
-		aContext.beginPath();
+		context.beginPath();
 
-		aContext.moveTo(topMidPoint.x, topMidPoint.y);
-		aContext.lineTo(topHighPoint.x, topHighPoint.y);
-		aContext.arc(this.center.x, this.center.y, this.radius, Math.PI * (3 / 2) + currentAngle, 0 + currentAngle, false);
-		aContext.lineTo(rightLowPoint.x, rightLowPoint.y);
-		aContext.arc(this.center.x, this.center.y, circleRadius, 0 + currentAngle, Math.PI * (1 / 2) + currentAngle, false);
-		aContext.lineTo(bottomHighPoint.x, bottomHighPoint.y);
-		aContext.arc(this.center.x, this.center.y, this.radius, Math.PI * (1 / 2) + currentAngle, Math.PI + currentAngle, false);
-		aContext.lineTo(leftLowPoint.x, leftLowPoint.y);
-		aContext.arc(this.center.x, this.center.y, circleRadius, Math.PI + currentAngle, Math.PI * (3 / 2) + currentAngle, false);
-		aContext.lineTo(topMidPoint.x, topMidPoint.y);
-		aContext.closePath();
+		context.moveTo(topMidPoint.x, topMidPoint.y);
+		context.lineTo(topHighPoint.x, topHighPoint.y);
+		context.arc(this.center.x, this.center.y, this.radius, Math.PI * (3 / 2) + currentAngle, 0 + currentAngle, false);
+		context.lineTo(rightLowPoint.x, rightLowPoint.y);
+		context.arc(this.center.x, this.center.y, circleRadius, 0 + currentAngle, Math.PI * (1 / 2) + currentAngle, false);
+		context.lineTo(bottomHighPoint.x, bottomHighPoint.y);
+		context.arc(this.center.x, this.center.y, this.radius, Math.PI * (1 / 2) + currentAngle, Math.PI + currentAngle, false);
+		context.lineTo(leftLowPoint.x, leftLowPoint.y);
+		context.arc(this.center.x, this.center.y, circleRadius, Math.PI + currentAngle, Math.PI * (3 / 2) + currentAngle, false);
+		context.lineTo(topMidPoint.x, topMidPoint.y);
+		context.closePath();
 
-		aContext.fill();
-		aContext.stroke();
+		context.fill();
+		context.stroke();
 	};
-
-	this.rescale();
 }
 
-function HalfRing(aRadius, aCenter, aAngle) {
-	this.radius = aRadius;
-	this.center = aCenter;
-	this.angle = aAngle;
+FanRing.prototype = Object.create(Ring.prototype);
+FanRing.prototype.constructor = FanRing;
+
+function HalfRing(aZ) {
+	Ring.call(this, aZ);
 
 	this.rescale = function() {
-
 	};
 
 	this.rotate = function() {
-
 	};
 
-
 	this.translate = function() {
-
 	};
 
 	this.collisionCheck = function() {
-
 	};
-	this.draw = function(aContext) {
-		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		aContext.strokeStyle = '#000000';
-		aContext.fillStyle = '#CCCCCC';
+
+	this.draw = function(aEngine) {
+		var context = aEngine.context;
+
+		var black = Util.intensity255(0, this.intensity);
+		var grey = Util.intensity255(204, this.intensity);
+		context.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		context.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
+		context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
 
 		var currentAngle = this.angle * (Math.PI / 180);
 
-		aContext.beginPath();
-		aContext.arc(this.center.x, this.center.y, this.radius, 0 + currentAngle, Math.PI + currentAngle, false);
-		aContext.closePath();
+		context.beginPath();
+		context.arc(this.center.x, this.center.y, this.radius, 0 + currentAngle, Math.PI + currentAngle, false);
+		context.closePath();
 
-		aContext.fill();
-		aContext.stroke();
+		context.fill();
+		context.stroke();
 	};
-
-	this.rescale();
 }
 
-function HoleRing(aRadius, aCenter, aAngle, aHoles, aHoleRadiusRatio, aDistanceFormCenterRatio) {
-	this.radius = aRadius;
-	this.center = aCenter;
-	this.angle = aAngle;
+HalfRing.prototype = Object.create(Ring.prototype);
+HalfRing.prototype.constructor = HalfRing;
+
+function HoleRing(aZ, aHoles, aHoleRadiusRatio, aDistanceFormCenterRatio) {
+	Ring.call(this, aZ);
+
 	this.holes = aHoles;
 	this.holeRadiusRatio = aHoleRadiusRatio;
 
@@ -341,33 +405,35 @@ function HoleRing(aRadius, aCenter, aAngle, aHoles, aHoleRadiusRatio, aDistanceF
 	};
 
 	this.rotate = function() {
-
 	};
 
-
 	this.translate = function() {
-
 	};
 
 	this.collisionCheck = function() {
-
 	};
-	this.draw = function(aContext) {
-		aContext.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
-		aContext.strokeStyle = '#000000';
-		aContext.fillStyle = '#CCCCCC';
 
-		aContext.beginPath();
-		aContext.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2, false);
+	this.draw = function(aEngine) {
+		var context = aEngine.context;
+
+		var black = Util.intensity255(0, this.intensity);
+		var grey = Util.intensity255(204, this.intensity);
+		context.strokeStyle = 'rgba(' + black + ',' + black + ',' + black + ',1)';
+		context.fillStyle = 'rgba(' + grey + ',' + grey + ',' + grey + ',1)';
+		context.lineWidth = RING_MAX_LINE_WIDTH * (this.radius / MAX_SIDE);
+
+		context.beginPath();
+		context.arc(this.center.x, this.center.y, this.radius, 0, Math.PI * 2, false);
 		for (var i = 0, len = centerPoints.length; i < len; i++) {
-			aContext.moveTo(centerPoints[i].x + holeRadius, centerPoints[i].y);
-			aContext.arc(centerPoints[i].x, centerPoints[i].y, holeRadius, 0, Math.PI * 2, true);
+			context.moveTo(centerPoints[i].x + holeRadius, centerPoints[i].y);
+			context.arc(centerPoints[i].x, centerPoints[i].y, holeRadius, 0, Math.PI * 2, true);
 		}
-		aContext.closePath();
-		//aContext.clip();
-		aContext.fill();
-		aContext.stroke();
+		context.closePath();
+		//context.clip();
+		context.fill();
+		context.stroke();
 	};
-
-	this.rescale();
 }
+
+HoleRing.prototype = Object.create(Ring.prototype);
+HoleRing.prototype.constructor = HoleRing;

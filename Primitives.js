@@ -1,38 +1,67 @@
-function Point(aX, aY) {
+function Vector2(aX, aY) {
 	this.x = aX;
 	this.y = aY;
-	this.rotate = function(aAngle, aPoint) {
-		if (aPoint.x !== this.x || aPoint.y !== this.y) {
-			this.x -= aPoint.x;
-			this.y -= aPoint.y;
-			var radAngle = (Math.PI * 2) * (aAngle / 360);
-			var s = Math.sin(radAngle);
-			var c = Math.cos(radAngle);
-
-			var newX = this.x * c - this.y * s;
-			var newY = this.x * s + this.y * c;
-
-			this.x = newX + aPoint.x;
-			this.y = newY + aPoint.y;
-		}
-	};
 }
 
-Point.singularCirclePoint = function(aAngle) {
-	return new Point(Math.cos(aAngle), Math.sin(aAngle));
+Vector2.prototype = {
+	get width() {
+		return this.x;
+	},
+	
+	get height() {
+		return this.y;
+	}
 };
 
-Point.prototype.multiply = function(aXMult, aYMult) {
+Vector2.singularCirclePoint = function(aAngle) {
+	return new Vector2(Math.cos(aAngle), Math.sin(aAngle));
+};
+
+Vector2.prototype.multiply = function(aXMult, aYMult) {
 	var yMult = (arguments.length == 2) ? aYMult : aXMult; 
-	return new Point(this.x * aXMult, this.y * yMult);
+	return new Vector2(this.x * aXMult, this.y * yMult);
 };
 
-Point.prototype.translate = function(aXDiff, aYDiff) {
+Vector2.prototype.translate = function(aXDiff, aYDiff) {
 	var xDiff = aXDiff || 0;
 	var yDiff = aYDiff || 0;
 
-	return new Point(this.x + xDiff, this.y + yDiff);
+	return new Vector2(this.x + xDiff, this.y + yDiff);
 };
+
+Vector2.prototype.rotate = function(aAngle, aPoint) {
+	if (aPoint.x !== this.x || aPoint.y !== this.y) {
+		this.x -= aPoint.x;
+		this.y -= aPoint.y;
+		var radAngle = (Math.PI * 2) * (aAngle / 360);
+		var s = Math.sin(radAngle);
+		var c = Math.cos(radAngle);
+
+		var newX = this.x * c - this.y * s;
+		var newY = this.x * s + this.y * c;
+
+		this.x = newX + aPoint.x;
+		this.y = newY + aPoint.y;
+	}
+};
+
+Vector2.prototype.minValue = function() {
+	return Math.min(this.x, this.y);
+};
+
+Vector2.prototype.maxValue = function() {
+	return Math.max(this.x, this.y);
+};
+
+Vector2.prototype.length = function() {
+	return Math.sqrt(this.x * this.x + this.y * this.y);
+};
+
+Vector2.prototype.substract = function(aVector2) {
+	return new Vector2(this.x - aVector2.x, this.y - aVector2.y);
+};
+
+var Point = Vector2;
 
 // http://jsperf.com/js-getter-vs-prop
 
